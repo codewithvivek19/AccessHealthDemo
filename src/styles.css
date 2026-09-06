@@ -1,0 +1,364 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Acsess Health design system.
+ * Colours are taken from the existing Acsess Health brand (Acsess blue #0170B9,
+ * deep navy for cinematic sections, red reserved for alerts only).
+ * Typeface: Rubik, matching the current Acsess site.
+ * All colours use oklch and are exposed as semantic tokens only.
+ */
+
+@theme {
+  /* Palomar-style hero/navbar brand palette */
+  --color-brand-dark: #2d3a2e;
+  --color-brand-green: #3d5a3e;
+  --color-brand-light: #f5f3ef;
+  --color-brand-cream: #faf8f5;
+
+  --font-helvetica-neue: "Helvetica Neue Light", Helvetica, Arial, sans-serif;
+  --font-playfair: "Playfair Display", serif;
+  --font-oswald: "Oswald", sans-serif;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-roboto-slab: "Roboto Slab", serif;
+  --font-raleway: "Raleway", sans-serif;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  --font-sans: "Rubik", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Rubik", ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-deep: var(--primary-deep);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-border: var(--ink-border);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-chart-1: var(--primary);
+  --color-chart-2: var(--success);
+  --color-chart-3: var(--warning);
+  --color-chart-4: var(--primary-deep);
+  --color-chart-5: var(--muted-foreground);
+}
+
+/* Light editorial identity: Acsess green #569B41, deep navy, white. */
+:root {
+  --radius: 2px;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.263 0.046 250);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.263 0.046 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.263 0.046 250);
+
+  /* Acsess green #569B41 */
+  --primary: oklch(0.623 0.143 139);
+  --primary-foreground: oklch(1 0 0);
+  --primary-deep: oklch(0.497 0.11 139);
+
+  --secondary: oklch(0.972 0.005 250);
+  --secondary-foreground: oklch(0.263 0.046 250);
+
+  --muted: oklch(0.972 0.005 250);
+  --muted-foreground: oklch(0.5 0.02 250);
+
+  --accent: oklch(0.955 0.018 139);
+  --accent-foreground: oklch(0.34 0.08 139);
+
+  /* Red is reserved for alerts only */
+  --destructive: oklch(0.58 0.21 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.55 0.13 145);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.72 0.15 75);
+  --warning-foreground: oklch(0.22 0.05 70);
+
+  /* Deep navy sections */
+  --ink: oklch(0.263 0.046 250);
+  --ink-foreground: oklch(0.985 0 0);
+  --ink-muted: oklch(0.82 0.018 250);
+  --ink-border: oklch(1 0 0 / 16%);
+
+  --border: oklch(0.263 0.046 250 / 14%);
+  --input: oklch(0.263 0.046 250 / 20%);
+  --ring: oklch(0.623 0.143 139);
+
+  --sidebar: oklch(0.985 0.004 250);
+  --sidebar-foreground: oklch(0.263 0.046 250);
+  --sidebar-primary: oklch(0.623 0.143 139);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.955 0.018 139);
+  --sidebar-accent-foreground: oklch(0.34 0.08 139);
+  --sidebar-border: oklch(0.263 0.046 250 / 12%);
+  --sidebar-ring: oklch(0.623 0.143 139);
+}
+
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    /* Older-user accessibility: generous default body size */
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Dark cinematic section wrapper */
+@utility ink-section {
+  background-color: var(--color-ink);
+  color: var(--color-ink-foreground);
+
+  & h1,
+  & h2,
+  & h3 {
+    color: var(--color-ink-foreground);
+  }
+}
+
+/* Thin quiet grid line used between editorial blocks */
+@utility hairline {
+  border-top: 1px solid var(--color-border);
+}
+
+@utility hairline-ink {
+  border-top: 1px solid var(--color-ink-border);
+}
+
+@utility eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@utility reveal-up {
+  animation: acsess-reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes acsess-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Headline that fades from white into grey, cinematic style */
+@utility text-fade {
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-ink-foreground),
+    color-mix(in oklch, var(--color-ink-foreground), transparent 45%)
+  );
+  background-clip: text;
+  color: transparent;
+}
+
+/* Hero / navbar entrance animations */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-down {
+  animation: fade-down 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stagger-1 {
+  animation-delay: 0ms;
+}
+.stagger-2 {
+  animation-delay: 120ms;
+}
+.stagger-3 {
+  animation-delay: 240ms;
+}
+.stagger-4 {
+  animation-delay: 360ms;
+}
+.stagger-5 {
+  animation-delay: 480ms;
+}
+.stagger-6 {
+  animation-delay: 600ms;
+}
+
+/* Faint grain over dark imagery */
+@utility grain {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image: radial-gradient(
+      color-mix(in oklch, var(--color-foreground), transparent 88%) 0.5px,
+      transparent 0.5px
+    );
+    background-size: 3px 3px;
+  }
+}
+
+/* Auth page entrances */
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0px);
+  }
+}
+
+@keyframes testimonialIn {
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0px) scale(1);
+  }
+}
+
+.auth-fade-slide {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(12px);
+  animation: fadeSlideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+.auth-testimonial {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(16px) scale(0.97);
+  animation: testimonialIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-fade-slide,
+  .auth-testimonial {
+    animation: none;
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
