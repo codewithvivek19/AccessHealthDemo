@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/__l5e/:path*",
+      "destination": "https://ef8988ee-ceed-4331-806f-22aa30dbeabd.lovableproject.com/__l5e/:path*"
+    }
+  ]
+}

@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import logoAsset from "@/assets/acsess-logo.png.asset.json";
+import { getAssetUrl } from "@/lib/media";
 
 export function Logo({ className = "" }: { className?: string; tone?: "light" | "dark" }) {
   return (
     <Link to="/" className={`flex items-center gap-3 ${className}`} aria-label="Acsess Health home">
       <img
-        src={logoAsset.url}
+        src={getAssetUrl(logoAsset.url)}
         alt="Acsess"
         width={236}
         height={58}
@@ -14,3 +15,4 @@ export function Logo({ className = "" }: { className?: string; tone?: "light" | 
     </Link>
   );
 }
+

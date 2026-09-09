@@ -16,30 +16,42 @@ import communication from "@/assets/site/communication-icon.png.asset.json";
 import dedication from "@/assets/site/dedication-icon.png.asset.json";
 import passion from "@/assets/site/passion-icon.png.asset.json";
 
+const CDN_BASE = "https://ef8988ee-ceed-4331-806f-22aa30dbeabd.lovableproject.com";
+
+export function getAssetUrl(url: string | undefined): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  if (url.startsWith("/__l5e/")) {
+    return `${CDN_BASE}${url}`;
+  }
+  return url;
+}
+
 export const MEDIA = {
-  hero: elder.url,
+  hero: getAssetUrl(elder.url),
   heroAlt: "An older resident and a support worker looking at a tablet together",
 
-  technician: support.url,
+  technician: getAssetUrl(support.url),
   technicianAlt: "An Acsess team member helping a resident with their connected services",
 
-  village: village.url,
+  village: getAssetUrl(village.url),
   villageAlt: "Residents enjoying an Australian retirement village community",
 
-  telephone: phone.url,
+  telephone: getAssetUrl(phone.url),
   telephoneAlt: "A telephone handset in a resident's home",
 
-  switchStar: switchStar.url,
+  switchStar: getAssetUrl(switchStar.url),
   switchStarAlt: "The SWITCH STAR double power outlet with automatic cut-off timer",
-  switchStarLogo: switchStarLogo.url,
+  switchStarLogo: getAssetUrl(switchStarLogo.url),
 
   icons: {
-    internet: internet.url,
-    television: tv.url,
-    telephone: telephone.url,
-    thermal: thermal.url,
-    communication: communication.url,
-    dedication: dedication.url,
-    passion: passion.url,
+    internet: getAssetUrl(internet.url),
+    television: getAssetUrl(tv.url),
+    telephone: getAssetUrl(telephone.url),
+    thermal: getAssetUrl(thermal.url),
+    communication: getAssetUrl(communication.url),
+    dedication: getAssetUrl(dedication.url),
+    passion: getAssetUrl(passion.url),
   },
 } as const;
+
