@@ -3163,3 +3163,140 @@
     font-size: 36px;
   }
 }
+
+@media (max-width: 920px) {
+  .p-login {
+    display: block;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    background:
+      linear-gradient(180deg, rgba(234, 246, 232, 0.7), rgba(255, 255, 255, 0.94) 34%),
+      #ffffff;
+  }
+
+  .p-login-art {
+    display: none;
+  }
+
+  .p-login-form-side {
+    min-height: 100dvh;
+    padding: max(18px, env(safe-area-inset-top)) 22px max(18px, env(safe-area-inset-bottom));
+  }
+
+  .p-login-form-nav {
+    justify-content: space-between;
+    gap: 18px;
+    min-height: 44px;
+  }
+
+  .p-login-mobile-logo {
+    display: flex;
+    flex: 0 1 168px;
+    min-width: 118px;
+  }
+
+  .p-login-mobile-logo img {
+    width: 100%;
+    height: auto;
+  }
+
+  .p-login-back {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .p-login-form {
+    width: 100%;
+    max-width: 430px;
+    margin: 0 auto;
+    padding: clamp(28px, 8vh, 58px) 0 30px;
+  }
+
+  .p-login-form-heading h2 {
+    font-size: 36px;
+    line-height: 1.05;
+  }
+
+  .p-login-form-heading > p {
+    margin-bottom: 22px;
+  }
+
+  .p-login-legal {
+    padding-bottom: 4px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .p-login-form-side {
+    padding-inline: 18px;
+  }
+
+  .p-login-form-nav {
+    align-items: flex-start;
+  }
+
+  .p-login-mobile-logo {
+    max-width: 145px;
+  }
+
+  .p-login-back {
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  .p-login-form {
+    padding-top: 26px;
+  }
+
+  .p-login-form-heading h2 {
+    font-size: 32px;
+  }
+
+  .p-login-segments button {
+    min-width: 0;
+    padding: 9px 8px;
+    font-size: 11px;
+  }
+
+  .p-password-label {
+    align-items: center;
+    gap: 12px;
+  }
+
+  .p-login-mode {
+    flex-wrap: wrap;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .p-demo-options > div {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .p-demo-options button {
+    justify-content: center;
+    min-height: 34px;
+  }
+}
+
+@media (max-width: 360px) {
+  .p-login-form-side {
+    padding-inline: 14px;
+  }
+
+  .p-login-mobile-logo {
+    max-width: 128px;
+  }
+
+  .p-login-form-heading h2 {
+    font-size: 29px;
+  }
+
+  .p-login .p-input,
+  .p-login-submit,
+  .p-google-button {
+    min-height: 44px;
+  }
+}
