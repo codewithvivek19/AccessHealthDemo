@@ -1,39 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { User } from "lucide-react";
+import { Check, Mail, ShieldCheck, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { PageHeader, SkeletonCard } from "@/components/site/PortalShell";
-
-export const Route = createFileRoute("/account/profile")({
-  component: Profile,
-});
-
-const field =
-  "mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-sm outline-none transition-colors focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20";
-
-function Toggle({ name, defaultChecked, label }: { name: string; defaultChecked: boolean; label: string }) {
-  return (
-    <label className="flex items-center justify-between gap-4 rounded-lg border border-border bg-background px-5 py-4 cursor-pointer hover:bg-secondary/50 transition-colors">
-      <span className="text-sm font-medium text-foreground">{label}</span>
-      <input
-        type="checkbox"
-        name={name}
-        defaultChecked={defaultChecked}
-        className="sr-only peer"
-      />
-      <div className="relative h-5 w-9 rounded-full bg-muted transition-colors peer-checked:bg-primary after:absolute after:left-0.5 after:top-0.5 after:size-4 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-4" aria-hidden />
-    </label>
-  );
-}
-
+import { ErrorState, RecordHeader, SkeletonCard } from "@/components/site/PortalShell";
+import { Switch } from "@/components/ui/switch";
+import { initials, shortDate } from "@/components/portal/format";
+export const Route = createFileRoute("/account/profile")({ component: Profile });
 function Profile() {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
-
-  const { data: profile, isPending } = useQuery({
-    queryKey: ["my-profile", user?.id],
+  const qc = useQueryClient();
+  const key = ["portal-profile", user?.id];
+  const query = useQuery({
+    queryKey: key,
     enabled: Boolean(user),
     queryFn: async () => {
       const { data, error } = await supabase
@@ -45,104 +25,155 @@ function Profile() {
       return data;
     },
   });
-
   const save = useMutation({
-    mutationFn: async (input: Record<string, unknown>) => {
+    mutationFn: async (input: {
+      full_name: string;
+      phone: string;
+      community: string;
+      address: string;
+      notify_email: boolean;
+      notify_sms: boolean;
+    }) => {
       const { error } = await supabase
         .from("profiles")
-        .upsert({ id: user!.id, email: user!.email ?? null, ...input });
+        .upsert({ ...input, id: user!.id, email: user!.email ?? null });
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Your details are saved.");
-      queryClient.invalidateQueries({ queryKey: ["my-profile", user?.id] });
+      toast.success("Your preferences are saved.");
+      void qc.invalidateQueries({ queryKey: key });
+      void qc.invalidateQueries({ queryKey: ["portal-account-overview", user?.id] });
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "Couldn't save that."),
+    onError: () => toast.error("Couldn’t save your changes. Please try again."),
   });
-
-  if (isPending) {
-    return (
-      <div className="space-y-6">
-        <div className="h-8 w-48 animate-pulse rounded-lg bg-muted" />
-        <div className="grid gap-4 sm:grid-cols-2">
-          {[...Array(4)].map((_, i) => <SkeletonCard key={i} lines={1} />)}
-        </div>
-      </div>
-    );
-  }
-
-  const initials = profile?.full_name
-    ? profile.full_name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()
-    : (user?.email?.charAt(0).toUpperCase() ?? "?");
-
+  if (query.isPending) return <SkeletonCard lines={6} />;
+  if (query.isError) return <ErrorState retry={() => void query.refetch()} />;
+  const p = query.data;
   return (
-    <div className="max-w-2xl space-y-8">
-      <PageHeader title="Profile" subtitle="Keep your contact details current so we can reach you about your services." />
-
-      {/* Avatar */}
-      <div className="flex items-center gap-4">
-        <div className="flex size-16 items-center justify-center rounded-full bg-primary text-xl font-bold text-primary-foreground">
-          {initials}
-        </div>
-        <div>
-          <p className="font-semibold text-foreground">{profile?.full_name ?? "No name set"}</p>
-          <p className="text-sm text-muted-foreground">{user?.email}</p>
-        </div>
-      </div>
-
-      <form
-        className="space-y-6"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const fd = new FormData(event.currentTarget);
-          save.mutate({
-            full_name: String(fd.get("full_name") ?? ""),
-            phone: String(fd.get("phone") ?? ""),
-            community: String(fd.get("community") ?? ""),
-            address: String(fd.get("address") ?? ""),
-            notify_email: fd.get("notify_email") === "on",
-            notify_sms: fd.get("notify_sms") === "on",
-          });
-        }}
-      >
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="full_name" className="text-sm font-medium text-foreground">Full name</label>
-            <input id="full_name" name="full_name" defaultValue={profile?.full_name ?? ""} className={field} autoComplete="name" />
+    <>
+      <RecordHeader
+        title="Make yourself at home."
+        subtitle="Your details. Your preferences. Your account."
+      />
+      <div className="p-profile-layout">
+        <aside className="p-panel p-profile-summary">
+          <span className="p-large-avatar">{initials(p?.full_name ?? user?.email)}</span>
+          <h2>{p?.full_name ?? "Your account"}</h2>
+          <p>{user?.email}</p>
+          <span className="p-member-since">Member since {shortDate(p?.created_at)}</span>
+          <div className="p-aside-note">
+            <ShieldCheck size={19} />
+            <strong>Your account, protected.</strong>To update your sign-in email, contact the
+            Acsess team.
           </div>
-          <div>
-            <label htmlFor="email" className="text-sm font-medium text-foreground">Email</label>
-            <input id="email" value={user?.email ?? ""} readOnly className={`${field} bg-secondary cursor-not-allowed`} />
-            <p className="mt-1 text-xs text-muted-foreground">Contact us to change your email address.</p>
-          </div>
-          <div>
-            <label htmlFor="phone" className="text-sm font-medium text-foreground">Phone</label>
-            <input id="phone" name="phone" defaultValue={profile?.phone ?? ""} className={field} autoComplete="tel" />
-          </div>
-          <div>
-            <label htmlFor="community" className="text-sm font-medium text-foreground">Village or community</label>
-            <input id="community" name="community" defaultValue={profile?.community ?? ""} className={field} />
-          </div>
-          <div className="sm:col-span-2">
-            <label htmlFor="address" className="text-sm font-medium text-foreground">Address</label>
-            <input id="address" name="address" defaultValue={profile?.address ?? ""} className={field} autoComplete="street-address" />
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <p className="text-sm font-semibold text-foreground">Notification preferences</p>
-          <Toggle name="notify_email" defaultChecked={profile?.notify_email ?? true} label="Email me about my services" />
-          <Toggle name="notify_sms" defaultChecked={profile?.notify_sms ?? false} label="Text me about outages and appointments" />
-        </div>
-
-        <button
-          type="submit"
-          disabled={save.isPending}
-          className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-deep disabled:opacity-60"
+        </aside>
+        <form
+          className="p-stack"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const f = new FormData(e.currentTarget);
+            save.mutate({
+              full_name: String(f.get("full_name") ?? "").trim(),
+              phone: String(f.get("phone") ?? "").trim(),
+              community: String(f.get("community") ?? "").trim(),
+              address: String(f.get("address") ?? "").trim(),
+              notify_email: f.get("notify_email") === "on",
+              notify_sms: f.get("notify_sms") === "on",
+            });
+          }}
         >
-          {save.isPending ? "Saving…" : "Save changes"}
-        </button>
-      </form>
-    </div>
+          <section className="p-panel">
+            <div className="p-panel-heading">
+              <div>
+                <h2>Personal details</h2>
+                <p>Help us reach you when it matters.</p>
+              </div>
+              <User size={18} className="text-slate-400" />
+            </div>
+            <div className="p-profile-fields">
+              <label className="p-field">
+                Full name
+                <input
+                  className="p-input"
+                  name="full_name"
+                  autoComplete="name"
+                  defaultValue={p?.full_name ?? ""}
+                  maxLength={120}
+                />
+              </label>
+              <label className="p-field">
+                Phone number
+                <input
+                  className="p-input"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  defaultValue={p?.phone ?? ""}
+                  maxLength={40}
+                />
+              </label>
+              <label className="p-field">
+                Village or community
+                <input
+                  className="p-input"
+                  name="community"
+                  defaultValue={p?.community ?? ""}
+                  maxLength={200}
+                />
+              </label>
+              <label className="p-field">
+                Contact address
+                <input
+                  className="p-input"
+                  name="address"
+                  autoComplete="street-address"
+                  defaultValue={p?.address ?? ""}
+                  maxLength={300}
+                />
+              </label>
+            </div>
+          </section>
+          <section className="p-panel">
+            <div className="p-panel-heading">
+              <div>
+                <h2>Stay in the loop</h2>
+                <p>Choose how you’d like to hear from us.</p>
+              </div>
+              <Mail size={18} className="text-slate-400" />
+            </div>
+            <label className="p-preference-row">
+              <span>
+                <strong>Email updates</strong>
+                <p>Service information and account updates.</p>
+              </span>
+              <Switch
+                className="p-preference-switch"
+                name="notify_email"
+                defaultChecked={p?.notify_email ?? true}
+                aria-label="Email updates"
+              />
+            </label>
+            <label className="p-preference-row">
+              <span>
+                <strong>SMS updates</strong>
+                <p>Notifications about outages and appointments.</p>
+              </span>
+              <Switch
+                className="p-preference-switch"
+                name="notify_sms"
+                defaultChecked={p?.notify_sms ?? false}
+                aria-label="SMS updates"
+              />
+            </label>
+          </section>
+          <div className="p-form-actions">
+            <button className="p-button" type="submit" disabled={save.isPending}>
+              {save.isPending ? "Saving…" : "Save preferences"}
+              <Check size={15} />
+            </button>
+          </div>
+        </form>
+      </div>
+    </>
   );
 }

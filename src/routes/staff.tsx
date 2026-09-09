@@ -16,16 +16,29 @@ export const Route = createFileRoute("/staff")({
 });
 
 const NAV = [
-  { to: "/staff", label: "Queue", icon: <LayoutDashboard className="size-5" aria-hidden />, exact: true },
-  { to: "/staff/customers", label: "Customers", icon: <Users className="size-5" aria-hidden /> },
-  { to: "/staff/enquiries", label: "Enquiries", icon: <InboxIcon className="size-5" aria-hidden /> },
+  {
+    to: "/staff",
+    label: "Service desk",
+    icon: <LayoutDashboard className="size-5" aria-hidden />,
+    exact: true,
+  },
+  {
+    to: "/staff/customers",
+    label: "Customer directory",
+    icon: <Users className="size-5" aria-hidden />,
+  },
+  {
+    to: "/staff/enquiries",
+    label: "Enquiries",
+    icon: <InboxIcon className="size-5" aria-hidden />,
+  },
 ] as const;
 
 function StaffLayout() {
   return (
     <PortalShell
-      eyebrow="Support desk"
-      description="Every customer request in one queue."
+      eyebrow="Service workspace"
+      description="Thoughtful service. Every day."
       nav={NAV}
       roles={["staff", "admin"]}
       portalIcon={<LayoutDashboard className="size-5" />}

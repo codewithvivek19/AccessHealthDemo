@@ -1,77 +1,142 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Wifi, Router, Phone, Tv2 } from "lucide-react";
+import {
+  ArrowUpRight,
+  CalendarDays,
+  CreditCard,
+  MapPin,
+  MessageSquare,
+  Phone,
+  Tv,
+  Wifi,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { SkeletonCard, EmptyState, RecordHeader, DataTable, StatusBadge } from "@/components/site/PortalShell";
-
-export const Route = createFileRoute("/account/services")({
-  component: AccountServices,
-});
-
-function svcIcon(type: string) {
-  const t = type.toLowerCase();
-  if (t.includes("internet") || t.includes("broadband")) return <Wifi className="size-5" />;
-  if (t.includes("phone") || t.includes("voice")) return <Phone className="size-5" />;
-  if (t.includes("tv") || t.includes("entertainment")) return <Tv2 className="size-5" />;
-  return <Router className="size-5" />;
-}
-
+import {
+  EmptyState,
+  ErrorState,
+  RecordHeader,
+  SkeletonCard,
+  StatusBadge,
+} from "@/components/site/PortalShell";
+import { money, shortDate } from "@/components/portal/format";
+export const Route = createFileRoute("/account/services")({ component: AccountServices });
 function AccountServices() {
   const { user } = useAuth();
-
-  const { data, isPending } = useQuery({
-    queryKey: ["my-services", user?.id],
+  const [filter, setFilter] = useState("all");
+  const query = useQuery({
+    queryKey: ["portal-subscriptions", user?.id],
     enabled: Boolean(user),
     queryFn: async () => {
-      const { data, error } = await supabase.from("customer_services").select("*").eq("user_id", user!.id);
+      const { data, error } = await supabase
+        .from("customer_services")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
-
-  if (isPending) return <SkeletonCard lines={6} />;
-
+  if (query.isPending) return <SkeletonCard lines={7} />;
+  if (query.isError) return <ErrorState retry={() => void query.refetch()} />;
+  const services = query.data.filter((s) => filter === "all" || s.status === filter);
   return (
-    <div className="space-y-6">
+    <>
       <RecordHeader
-        title="My Services"
-        subtitle="Manage your active connections and plans"
-        icon={<Wifi className="size-5" />}
+        title="Your subscriptions."
+        subtitle="Everything you’re connected to. Every detail in one place."
+        actions={
+          <div className="p-segments">
+            {["all", "active"].map((value) => (
+              <button key={value} aria-pressed={filter === value} onClick={() => setFilter(value)}>
+                {value === "all" ? "All services" : "Active"}
+              </button>
+            ))}
+          </div>
+        }
       />
-
-      {!data?.length ? (
-        <EmptyState icon={<Wifi className="size-7" />} title="No active services" description="You don't have any Acsess services connected yet." />
-      ) : (
-         <div className="grid gap-6">
-           {data.map((s) => (
-             <div key={s.id} className="rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col md:flex-row">
-                <div className="bg-slate-50 p-6 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col justify-center items-center md:w-64">
-                   <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
-                     {svcIcon(s.service_name)}
-                   </div>
-                   <h3 className="text-center font-bold text-slate-900">{s.service_name}</h3>
-                   <div className="mt-3"><StatusBadge status={s.status ?? "active"} /></div>
-                </div>
-                <div className="p-6 flex-1 grid sm:grid-cols-2 gap-6">
-                   <div>
-                     <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Plan</p>
-                     <p className="text-sm font-medium text-slate-900">{s.plan}</p>
-                   </div>
-                   <div>
-                     <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Monthly Cost</p>
-                     <p className="text-sm font-medium text-slate-900">${s.monthly_price}</p>
-                   </div>
-                   <div>
-                     <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Activation Date</p>
-                     <p className="text-sm font-medium text-slate-900">{s.started_on ? new Date(s.started_on).toLocaleDateString("en-AU") : "-"}</p>
-                   </div>
-
-                </div>
-             </div>
-           ))}
-         </div>
+      <div className="p-subscription-grid">
+        {services.map((s) => (
+          <article key={s.id} className="p-panel p-subscription">
+            <div className="p-subscription-top">
+              <span className="p-service-icon">
+                {/phone|voice|telephone/i.test(s.service_name) ? (
+                  <Phone />
+                ) : /tv|television|foxtel/i.test(s.service_name) ? (
+                  <Tv />
+                ) : (
+                  <Wifi />
+                )}
+              </span>
+              <StatusBadge status={s.status} />
+            </div>
+            <div className="p-subscription-title">
+              <p>ACSESS SERVICE</p>
+              <h2>{s.service_name}</h2>
+              <span>{s.plan ?? "Contact us for your plan details"}</span>
+            </div>
+            <div className="p-subscription-cost">
+              <strong>{money(s.monthly_price)}</strong>
+              {s.monthly_price != null && <span>/ month</span>}
+            </div>
+            <dl className="p-subscription-details">
+              <div>
+                <dt>
+                  <MapPin size={15} />
+                  Service location
+                </dt>
+                <dd>{s.location ?? "Not recorded"}</dd>
+              </div>
+              <div>
+                <dt>
+                  <CalendarDays size={15} />
+                  Connected since
+                </dt>
+                <dd>{shortDate(s.started_on)}</dd>
+              </div>
+              <div>
+                <dt>
+                  <CreditCard size={15} />
+                  Billing currency
+                </dt>
+                <dd>AUD</dd>
+              </div>
+            </dl>
+            <div className="p-subscription-actions">
+              <Link
+                to="/account/support"
+                search={{ service: s.service_name, new: true }}
+                className="p-button p-button-secondary"
+              >
+                <MessageSquare size={15} />
+                Get help with this service
+                <ArrowUpRight size={14} />
+              </Link>
+            </div>
+          </article>
+        ))}
+      </div>
+      {!services.length && (
+        <EmptyState
+          icon={<Wifi />}
+          title={
+            filter === "active" ? "No active subscriptions." : "Your next connection starts here."
+          }
+          description="Once a service is linked to your account, you can see its plan, price, and support history here."
+          action={{ label: "Talk to Acsess", to: "/contact" }}
+        />
       )}
-    </div>
+      <div className="p-plan-help">
+        <div>
+          <h3>Thinking about a change?</h3>
+          <p>Talk to our team about your plan, moving home, or adding another service.</p>
+        </div>
+        <Link to="/account/support" search={{ new: true }} className="p-text-link">
+          Let’s find the right fit
+          <ArrowUpRight size={15} />
+        </Link>
+      </div>
+    </>
   );
 }

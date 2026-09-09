@@ -16,9 +16,18 @@ export const Route = createFileRoute("/operator")({
 });
 
 const NAV = [
-  { to: "/operator", label: "Overview", icon: <LayoutDashboard className="size-5" aria-hidden />, exact: true },
+  {
+    to: "/operator",
+    label: "Overview",
+    icon: <LayoutDashboard className="size-5" aria-hidden />,
+    exact: true,
+  },
   { to: "/operator/sites", label: "Villages", icon: <MapPin className="size-5" aria-hidden /> },
-  { to: "/operator/requests", label: "Requests", icon: <LifeBuoy className="size-5" aria-hidden /> },
+  {
+    to: "/operator/requests",
+    label: "Requests",
+    icon: <LifeBuoy className="size-5" aria-hidden />,
+  },
 ] as const;
 
 function OperatorLayout() {

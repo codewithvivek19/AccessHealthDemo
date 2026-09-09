@@ -1,21 +1,24 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Download, FileText, FileCheck } from "lucide-react";
+import { ArrowDownToLine, FileText, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { EmptyState, SkeletonCard, RecordHeader, DataTable } from "@/components/site/PortalShell";
-
-export const Route = createFileRoute("/account/documents")({
-  component: Documents,
-});
-
+import {
+  DataTable,
+  EmptyState,
+  ErrorState,
+  RecordHeader,
+  SkeletonCard,
+} from "@/components/site/PortalShell";
+import { shortDate } from "@/components/portal/format";
+export const Route = createFileRoute("/account/documents")({ component: Documents });
 function Documents() {
   const { user } = useAuth();
-  const [filter, setFilter] = useState<string>("all");
-
-  const { data, isPending } = useQuery({
-    queryKey: ["my-documents", user?.id],
+  const [term, setTerm] = useState("");
+  const [category, setCategory] = useState("all");
+  const query = useQuery({
+    queryKey: ["portal-documents", user?.id],
     enabled: Boolean(user),
     queryFn: async () => {
       const { data, error } = await supabase
@@ -27,78 +30,96 @@ function Documents() {
       return data;
     },
   });
-
-  const categories = ["all", ...Array.from(new Set((data ?? []).map((d) => d.category).filter(Boolean)))];
-  const filtered = filter === "all" ? (data ?? []) : (data ?? []).filter((d) => d.category === filter);
-
-  if (isPending) return <SkeletonCard lines={4} />;
-
+  if (query.isPending) return <SkeletonCard lines={6} />;
+  if (query.isError) return <ErrorState retry={() => void query.refetch()} />;
+  const docs = query.data.filter(
+    (d) =>
+      (category === "all" || d.category === category) &&
+      d.title.toLowerCase().includes(term.toLowerCase()),
+  );
   return (
-    <div className="space-y-6">
-      <RecordHeader
-        title="Documents"
-        subtitle="Service agreements, statements and setup guides"
-        icon={<FileText className="size-5" />}
-        actions={
-          categories.length > 1 && (
-            <div className="flex bg-slate-100 p-1 rounded-md">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setFilter(cat)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded capitalize transition-colors ${
-                    filter === cat ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          )
-        }
-      />
-
-      {!filtered.length ? (
-        <EmptyState icon={<FileText className="size-7" />} title="No documents" description="Invoices, agreements and guides will appear here." />
-      ) : (
-        <DataTable
-          data={filtered}
-          columns={[
-            {
-              header: "Document Title",
-              className: "w-full",
-              accessor: (r) => (
-                <div className="flex items-center gap-3">
-                  <div className="flex size-8 items-center justify-center rounded bg-slate-100 text-slate-500">
-                    <FileCheck className="size-4" />
-                  </div>
-                  <span className="font-medium text-slate-900">{r.title}</span>
-                </div>
-              )
-            },
-            {
-              header: "Category",
-              accessor: (r) => <span className="capitalize text-slate-600">{r.category ?? "General"}</span>
-            },
-            {
-              header: "Size",
-              accessor: (r) => <span className="text-slate-600">{r.size_label ?? "-"}</span>
-            },
-            {
-              header: "Date",
-              accessor: (r) => <span className="text-slate-600">{r.issued_on ? new Date(r.issued_on).toLocaleDateString("en-AU") : "-"}</span>
-            },
-            {
-              header: "",
-              accessor: (r) => r.file_url ? (
-                <a href={r.file_url} download className="flex items-center justify-center rounded border border-slate-200 bg-white p-1.5 text-slate-500 hover:bg-slate-50 hover:text-primary transition-colors">
-                  <Download className="size-4" />
-                </a>
-              ) : null
-            }
-          ]}
-        />
-      )}
-    </div>
+    <>
+      <RecordHeader title="Your document library." subtitle="The important things, all together." />
+      <section className="p-panel">
+        <div className="p-toolbar">
+          <div className="p-segments">
+            {["all", ...new Set(query.data.map((d) => d.category))].map((c) => (
+              <button
+                key={c}
+                aria-pressed={category === c}
+                onClick={() => setCategory(c)}
+                className="capitalize"
+              >
+                {c === "all" ? "All documents" : c}
+              </button>
+            ))}
+          </div>
+          <label className="p-search-field">
+            <Search size={15} />
+            <input
+              aria-label="Search documents"
+              placeholder="Find a document…"
+              value={term}
+              onChange={(e) => setTerm(e.target.value)}
+            />
+          </label>
+        </div>
+        {query.data.length ? (
+          <DataTable
+            data={docs}
+            columns={[
+              {
+                header: "Document",
+                sortValue: (d) => d.title,
+                accessor: (d) => (
+                  <span className="p-inline-person">
+                    <span className="p-service-icon">
+                      <FileText />
+                    </span>
+                    <span>
+                      {d.title}
+                      <span className="p-subtext capitalize">{d.category}</span>
+                    </span>
+                  </span>
+                ),
+              },
+              {
+                header: "Issued",
+                sortValue: (d) => d.issued_on,
+                accessor: (d) => shortDate(d.issued_on),
+              },
+              { header: "Size", accessor: (d) => d.size_label ?? "—" },
+              {
+                header: "",
+                accessor: (d) =>
+                  d.file_url && /^https?:\/\//i.test(d.file_url) ? (
+                    <a
+                      href={d.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-button p-button-secondary"
+                      aria-label={`Open ${d.title}`}
+                    >
+                      <ArrowDownToLine size={15} />
+                      Open
+                    </a>
+                  ) : (
+                    <span className="p-subtext">File pending</span>
+                  ),
+              },
+            ]}
+          />
+        ) : (
+          <EmptyState
+            icon={<FileText />}
+            title="A place for the essentials."
+            description="Your service agreements, invoices, and shared guides will appear here."
+          />
+        )}
+      </section>
+      <p className="p-support-footnote">
+        Looking for something specific? <a href="tel:1300736785">Our team can help.</a>
+      </p>
+    </>
   );
 }

@@ -139,7 +139,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const location = useRouterState({ select: (s) => s.location.pathname });
-  const isPortal = /^\/(account|admin|staff|operator|developer)/.test(location);
+  const isPortal = /^\/(account|admin|staff|operator|developer|auth)(\/|$)/.test(location);
 
   return (
     <QueryClientProvider client={queryClient}>

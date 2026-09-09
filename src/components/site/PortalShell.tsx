@@ -1,127 +1,37 @@
-import { useState, type ReactNode } from "react";
-import { Link, Outlet, useNavigate, useRouter, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState, type ReactNode } from "react";
+import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  LogOut, Menu, X, LayoutDashboard, Wifi, LifeBuoy, FileText, User,
-  Building2, Briefcase, Users, Globe, MapPin, InboxIcon, ShieldCheck,
-  ChevronRight, TrendingUp, TrendingDown, Minus, Search, Bell, Grid, ChevronDown
+  ArrowDown,
+  ArrowUp,
+  ArrowUpRight,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Command,
+  Globe,
+  HelpCircle,
+  LayoutGrid,
+  LogOut,
+  Menu,
+  Search,
+  ShieldCheck,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyOrganisations, useRoles, type AppRole } from "@/hooks/usePortalAccess";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 export type NavItem = { to: string; label: string; icon: ReactNode; exact?: boolean };
 
-// -----------------------------------------------------------------------------
-// App Header (Salesforce Global Header style)
-// -----------------------------------------------------------------------------
-function AppHeader({ portalName, email }: { portalName: string; email: string }) {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate({ to: "/" });
-  };
-
-  return (
-    <header className="sticky top-0 z-50 flex h-14 w-full items-center justify-between border-b border-slate-200 bg-white px-4 shadow-sm">
-      <div className="flex items-center gap-4">
-        <button type="button" className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 lg:hidden">
-          <Menu className="size-5" />
-        </button>
-        <div className="flex items-center gap-3">
-          <div className="flex size-8 items-center justify-center rounded bg-primary text-white">
-            <Grid className="size-4" />
-          </div>
-          <span className="text-sm font-semibold text-slate-800 hidden sm:block">Acsess Health CRM</span>
-          <span className="text-sm font-medium text-slate-500 hidden sm:block">|</span>
-          <span className="text-sm font-semibold text-primary">{portalName}</span>
-        </div>
-      </div>
-
-      <div className="flex max-w-md flex-1 items-center px-8 hidden md:flex">
-        <div className="relative w-full">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-          <input
-            type="search"
-            placeholder="Search Salesforce..."
-            className="w-full rounded-md border border-slate-300 bg-slate-50 py-1.5 pl-9 pr-4 text-sm outline-none transition-colors focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary"
-          />
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <button type="button" className="rounded-full p-2 text-slate-500 hover:bg-slate-100">
-          <Bell className="size-5" />
-        </button>
-        <div className="h-6 w-px bg-slate-200 mx-1" />
-        <div className="group relative">
-          <button type="button" className="flex items-center gap-2 rounded-full p-1 pr-2 hover:bg-slate-100 transition-colors">
-            <div className="flex size-7 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-700 uppercase">
-              {email.charAt(0)}
-            </div>
-            <ChevronDown className="size-3 text-slate-500" />
-          </button>
-          <div className="absolute right-0 mt-1 hidden w-48 rounded-md border border-slate-200 bg-white py-1 shadow-lg group-hover:block">
-            <div className="px-4 py-2 text-xs text-slate-500 border-b border-slate-100 truncate">{email}</div>
-            <button
-              onClick={handleSignOut}
-              className="flex w-full items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-            >
-              <LogOut className="size-4" /> Sign out
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-// -----------------------------------------------------------------------------
-// App Sidebar (Vertical App Nav)
-// -----------------------------------------------------------------------------
-function AppSidebar({ nav, isOpen, setIsOpen }: { nav: readonly NavItem[]; isOpen: boolean; setIsOpen: (o: boolean) => void }) {
-  const location = useRouterState({ select: (s) => s.location.pathname });
-
-  return (
-    <>
-      {isOpen && (
-        <div className="fixed inset-0 z-40 bg-slate-900/50 lg:hidden" onClick={() => setIsOpen(false)} />
-      )}
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 mt-14 w-60 border-r border-slate-200 bg-white transition-transform duration-300 lg:translate-x-0 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <nav className="space-y-1 p-3">
-          {nav.map((item) => {
-            const isActive = item.exact
-              ? location === item.to
-              : location === item.to || location.startsWith(item.to + "/");
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`}
-              >
-                <span className={isActive ? "text-primary" : "text-slate-400"}>{item.icon}</span>
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
-    </>
-  );
-}
-
-// -----------------------------------------------------------------------------
-// PortalShell (Main Wrapper)
-// -----------------------------------------------------------------------------
 export function PortalShell({
   eyebrow,
   description,
@@ -129,7 +39,6 @@ export function PortalShell({
   roles,
   orgKind,
   children,
-  portalIcon,
 }: {
   eyebrow: string;
   description: string;
@@ -139,75 +48,269 @@ export function PortalShell({
   children?: ReactNode;
   portalIcon?: ReactNode;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { session, loading: authLoading } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [term, setTerm] = useState("");
+  const { session, loading: authLoading, signOut } = useAuth();
   const { roles: myRoles, loading: rolesLoading } = useRoles();
   const { organisations, loading: orgsLoading } = useMyOrganisations();
   const navigate = useNavigate();
-
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const customer = pathname.startsWith("/account");
   const loading = authLoading || rolesLoading || (Boolean(orgKind) && orgsLoading);
-  const hasRole = roles ? roles.some((r) => myRoles.includes(r)) : false;
-  const hasOrg = orgKind ? organisations.some((o) => o.kind === orgKind) : false;
-  const allowed = myRoles.includes("admin") || hasRole || hasOrg || (!roles && !orgKind);
+  const allowed =
+    myRoles.includes("admin") ||
+    (roles?.some((r) => myRoles.includes(r)) ?? false) ||
+    (orgKind ? organisations.some((o) => o.kind === orgKind) : !roles);
+  const active = nav.find((n) =>
+    n.exact ? pathname.replace(/\/$/, "") === n.to : pathname.startsWith(n.to),
+  );
+  const workspaces = [{ to: "/account", label: "Personal account" }];
+  if (myRoles.includes("staff") || myRoles.includes("admin"))
+    workspaces.push({ to: "/staff", label: "Service workspace" });
+  if (
+    myRoles.includes("operator") ||
+    myRoles.includes("staff") ||
+    myRoles.includes("admin") ||
+    organisations.some((o) => o.kind === "operator")
+  )
+    workspaces.push({ to: "/operator", label: "Village operations" });
+  if (
+    myRoles.includes("staff") ||
+    myRoles.includes("admin") ||
+    organisations.some((o) => o.kind === "developer")
+  )
+    workspaces.push({ to: "/developer", label: "Project workspace" });
+  if (myRoles.includes("admin")) workspaces.push({ to: "/admin", label: "Administration" });
 
-  if (!authLoading && !session) {
-    navigate({ to: "/auth" });
-    return null;
-  }
+  useEffect(() => {
+    if (!authLoading && !session) void navigate({ to: "/auth" });
+  }, [authLoading, session, navigate]);
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
-  if (loading || !session) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
-        <div className="size-8 animate-spin rounded-full border-4 border-slate-200 border-t-primary" />
-      </div>
-    );
-  }
-
-  if (!allowed) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-        <div className="max-w-md text-center rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-          <ShieldCheck className="mx-auto size-12 text-red-500" />
-          <h1 className="mt-4 text-xl font-bold text-slate-900">Access Restricted</h1>
-          <p className="mt-2 text-sm text-slate-500">You do not have the required permissions to view this workspace.</p>
-          <div className="mt-4 p-4 bg-slate-100 rounded text-left text-xs font-mono text-slate-700 overflow-auto">
-            <p><strong>Debug Info:</strong></p>
-            <p>myRoles: {JSON.stringify(myRoles)}</p>
-            <p>required roles: {JSON.stringify(roles)}</p>
-            <p>orgKind: {orgKind}</p>
-            <p>myOrgs: {JSON.stringify(organisations)}</p>
-            <p>allowed: {String(allowed)}</p>
-            <p>loading: {String(loading)}</p>
-          </div>
-          <div className="mt-6 flex justify-center gap-3">
-            <Link to="/account" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white">Go to Account</Link>
-          </div>
+  const sidebar = (
+    <>
+      <Link to="/" className="p-brand" aria-label="Acsess Health home">
+        <span className="p-brand-symbol">
+          a<span />
+        </span>
+        <span>
+          acsess<span className="p-brand-health">HEALTH</span>
+        </span>
+      </Link>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="p-workspace">
+          <span className="p-workspace-icon">
+            <LayoutGrid size={17} />
+          </span>
+          <span>
+            <small>Workspace</small>
+            <strong>{eyebrow}</strong>
+          </span>
+          <ChevronDown size={14} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="portal-popup min-w-60">
+          <DropdownMenuLabel>Switch workspace</DropdownMenuLabel>
+          {workspaces.map((w) => (
+            <DropdownMenuItem key={w.to} asChild>
+              <Link to={w.to}>{w.label}</Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <p className="p-nav-label">{customer ? "YOUR ACCOUNT" : "WORKSPACE"}</p>
+      <nav aria-label={`${eyebrow} navigation`} className="p-nav">
+        {nav.map((item) => {
+          const selected = item.exact
+            ? pathname.replace(/\/$/, "") === item.to
+            : pathname.startsWith(item.to);
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              aria-current={selected ? "page" : undefined}
+              onClick={() => setMobileOpen(false)}
+              className={selected ? "is-active" : ""}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+              {selected && <span className="p-nav-active" />}
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="p-sidebar-bottom">
+        <div className="p-help">
+          <HelpCircle size={20} />
+          <strong>
+            {customer ? "A little help, whenever you need it." : "Connected to better care."}
+          </strong>
+          <p>
+            {customer
+              ? "Your Acsess team is a conversation away."
+              : "Your people. Your communities. One workspace."}
+          </p>
+          <Link to={customer ? "/account/support" : "/support"}>
+            {customer ? "Contact support" : "Support resources"}
+            <ArrowUpRight size={15} />
+          </Link>
         </div>
+        <Link to="/" className="p-site-link">
+          <Globe size={16} /> Visit Acsess website
+          <ArrowUpRight size={14} />
+        </Link>
+      </div>
+    </>
+  );
+
+  if (loading || !session)
+    return (
+      <div className="portal p-auth-state">
+        <div className="p-loading-orbit" />
+        <p>Opening your workspace…</p>
       </div>
     );
-  }
+  if (!allowed)
+    return (
+      <div className="portal p-auth-state">
+        <ShieldCheck size={34} />
+        <h1>This workspace needs access.</h1>
+        <p>Switch to your account or contact your administrator.</p>
+        <Link to="/account" className="p-button">
+          Open my account
+        </Link>
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <AppHeader portalName={eyebrow} email={session.user.email ?? ""} />
-      <AppSidebar nav={nav} isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <main className="pt-14 lg:pl-60 min-h-screen">
-        <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className={`portal ${customer ? "portal-customer" : "portal-employee"}`}>
+      <a href="#workspace-content" className="p-skip">
+        Skip to content
+      </a>
+      <aside className="p-sidebar">{sidebar}</aside>
+      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        <SheetContent side="left" className="portal p-mobile-sidebar">
+          <SheetTitle className="sr-only">Workspace navigation</SheetTitle>
+          <SheetDescription className="sr-only">
+            Choose a page or switch workspace.
+          </SheetDescription>
+          {sidebar}
+        </SheetContent>
+      </Sheet>
+      <div className="p-main">
+        <header className="p-topbar">
+          <div className="p-breadcrumb">
+            <button
+              className="p-icon-button p-mobile-menu"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open navigation"
+            >
+              <Menu size={20} />
+            </button>
+            <span>{eyebrow}</span>
+            <ChevronRight size={13} />
+            <strong>{active?.label ?? "Overview"}</strong>
+          </div>
+          <div className="p-topbar-actions">
+            <button
+              className="p-search-trigger"
+              onClick={() => {
+                setTerm("");
+                setSearchOpen(true);
+              }}
+            >
+              <Search size={16} />
+              <span>Jump to a page</span>
+              <kbd>⌘ K</kbd>
+            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="p-avatar" aria-label="Account menu">
+                {session.user.email?.charAt(0).toUpperCase()}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="portal-popup">
+                <DropdownMenuLabel className="max-w-64 truncate">
+                  {session.user.email}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/account/profile">Profile & preferences</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    void signOut()
+                      .then(() => navigate({ to: "/" }))
+                      .catch(() => toast.error("Couldn’t sign out. Please try again."));
+                  }}
+                >
+                  <LogOut size={15} />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </header>
+        <main id="workspace-content" className="p-content">
+          <div className="p-section-eyebrow">
+            <span>{customer ? "ACSESS, AT YOUR SERVICE" : "ACSESS HEALTH"}</span>
+            <span>{description}</span>
+          </div>
           {children ?? <Outlet />}
-        </div>
-      </main>
+        </main>
+        <footer className="p-footer">
+          <span>Acsess Health</span>
+          <span>Connected communities. Considered service.</span>
+        </footer>
+      </div>
+      <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
+        <DialogContent className="portal-popup p-command">
+          <DialogTitle className="sr-only">Jump to a page</DialogTitle>
+          <DialogDescription className="sr-only">
+            Search pages available in your workspace.
+          </DialogDescription>
+          <div className="p-command-input">
+            <Search size={20} />
+            <input
+              autoFocus
+              aria-label="Search pages"
+              placeholder="Where would you like to go?"
+              value={term}
+              onChange={(e) => setTerm(e.target.value)}
+            />
+          </div>
+          <div className="p-command-results">
+            {[...nav, ...workspaces.filter((w) => !nav.some((n) => n.to === w.to))]
+              .filter((n) => n.label.toLowerCase().includes(term.toLowerCase()))
+              .map((n) => (
+                <Link key={n.to} to={n.to} onClick={() => setSearchOpen(false)}>
+                  <span>{n.label}</span>
+                  <ArrowUpRight size={17} />
+                </Link>
+              ))}
+            {![...nav, ...workspaces].some((n) =>
+              n.label.toLowerCase().includes(term.toLowerCase()),
+            ) && <p>No matching pages.</p>}
+          </div>
+          <div className="p-command-footer">
+            <Command size={13} /> Quick navigation <span>Esc to close</span>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
-// -----------------------------------------------------------------------------
-// CRM Components
-// -----------------------------------------------------------------------------
-
 export function RecordHeader({
   title,
   subtitle,
-  icon,
   actions,
 }: {
   title: string;
@@ -216,170 +319,272 @@ export function RecordHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="flex items-center gap-4">
-        {icon && (
-          <div className="flex size-10 items-center justify-center rounded bg-primary/10 text-primary">
-            {icon}
-          </div>
-        )}
-        <div>
-          {subtitle && <p className="text-xs font-medium uppercase tracking-wider text-slate-500">{subtitle}</p>}
-          <h1 className="text-xl font-bold text-slate-900">{title}</h1>
-        </div>
-      </div>
-      {actions && <div className="flex items-center gap-2">{actions}</div>}
-    </div>
-  );
-}
-
-export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
-  return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="p-page-header">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-slate-500">{subtitle}</p>}
+        <h1>{title}</h1>
+        {subtitle && <p>{subtitle}</p>}
       </div>
-      {action && <div>{action}</div>}
+      {actions && <div className="p-header-actions">{actions}</div>}
     </div>
   );
 }
+export function PageHeader({
+  title,
+  subtitle,
+  action,
+}: {
+  title: string;
+  subtitle?: string;
+  action?: ReactNode;
+}) {
+  return <RecordHeader title={title} {...(subtitle ? { subtitle } : {})} actions={action} />;
+}
 
-export function DataTable({
+type Column<T> = {
+  header: string;
+  accessor: (row: T) => ReactNode;
+  className?: string;
+  sortValue?: (row: T) => string | number;
+};
+export function DataTable<T extends { id: string }>({
   columns,
   data,
-  keyField = "id",
   onRowClick,
 }: {
-  columns: { header: string; accessor: (row: any) => ReactNode; className?: string }[];
-  data: any[];
+  columns: Column<T>[];
+  data: T[];
   keyField?: string;
-  onRowClick?: (row: any) => void;
+  onRowClick?: (row: T) => void;
 }) {
+  const [page, setPage] = useState(0);
+  const [sort, setSort] = useState<{ index: number; direction: number } | null>(null);
+  const pageSize = 10;
+  const sorted = [...data];
+  if (sort) {
+    const accessor = columns[sort.index]?.sortValue;
+    if (accessor)
+      sorted.sort((a, b) => {
+        const x = accessor(a);
+        const y = accessor(b);
+        return (
+          (typeof x === "number" && typeof y === "number"
+            ? x - y
+            : String(x).localeCompare(String(y))) * sort.direction
+        );
+      });
+  }
+  const currentPage = Math.min(page, Math.max(0, Math.ceil(data.length / pageSize) - 1));
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
-      <table className="min-w-full divide-y divide-slate-200 text-sm">
-        <thead className="bg-slate-50">
-          <tr>
-            {columns.map((col, i) => (
-              <th key={i} className={`px-4 py-3 text-left font-semibold text-slate-700 ${col.className ?? ""}`}>
-                {col.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-200 bg-white">
-          {data.length === 0 ? (
+    <div className="p-table-panel">
+      <div className="p-table-scroll">
+        <table className="p-table">
+          <thead>
             <tr>
-              <td colSpan={columns.length} className="px-4 py-8 text-center text-slate-500">
-                No records to display.
-              </td>
+              {columns.map((c, i) => (
+                <th
+                  key={i}
+                  className={c.className}
+                  scope="col"
+                  aria-sort={
+                    sort?.index === i
+                      ? sort.direction === 1
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  {c.sortValue ? (
+                    <button
+                      onClick={() => {
+                        setSort({ index: i, direction: sort?.index === i ? -sort.direction : 1 });
+                        setPage(0);
+                      }}
+                    >
+                      {c.header}
+                      {sort?.index === i ? (
+                        sort.direction === 1 ? (
+                          <ArrowUp size={12} />
+                        ) : (
+                          <ArrowDown size={12} />
+                        )
+                      ) : (
+                        <ChevronDown size={12} />
+                      )}
+                    </button>
+                  ) : (
+                    c.header
+                  )}
+                </th>
+              ))}
             </tr>
-          ) : (
-            data.map((row, idx) => (
+          </thead>
+          <tbody>
+            {sorted.slice(currentPage * pageSize, (currentPage + 1) * pageSize).map((row) => (
               <tr
-                key={row[keyField] ?? idx}
+                key={row.id}
                 onClick={() => onRowClick?.(row)}
-                className={`transition-colors ${onRowClick ? "cursor-pointer hover:bg-slate-50" : ""}`}
+                className={onRowClick ? "p-clickable-row" : ""}
               >
-                {columns.map((col, i) => (
-                  <td key={i} className={`whitespace-nowrap px-4 py-3 text-slate-700 ${col.className ?? ""}`}>
-                    {col.accessor(row)}
+                {columns.map((c, i) => (
+                  <td key={i} className={c.className}>
+                    {onRowClick && i === 0 ? (
+                      <button
+                        className="p-record-link"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onRowClick(row);
+                        }}
+                      >
+                        {c.accessor(row)}
+                      </button>
+                    ) : (
+                      c.accessor(row)
+                    )}
                   </td>
                 ))}
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-// -----------------------------------------------------------------------------
-// Shared UI Primitives
-// -----------------------------------------------------------------------------
-
-const STATUS_COLOURS: Record<string, string> = {
-  live: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  active: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  open: "bg-blue-100 text-blue-800 border-blue-200",
-  "in progress": "bg-amber-100 text-amber-800 border-amber-200",
-  in_progress: "bg-amber-100 text-amber-800 border-amber-200",
-  pending: "bg-amber-100 text-amber-800 border-amber-200",
-  "on track": "bg-emerald-100 text-emerald-800 border-emerald-200",
-  on_track: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  delayed: "bg-red-100 text-red-800 border-red-200",
-  urgent: "bg-red-100 text-red-800 border-red-200",
-  closed: "bg-slate-100 text-slate-700 border-slate-200",
-  cancelled: "bg-slate-100 text-slate-700 border-slate-200",
-  suspended: "bg-orange-100 text-orange-800 border-orange-200",
-  planning: "bg-violet-100 text-violet-800 border-violet-200",
-  construction: "bg-amber-100 text-amber-800 border-amber-200",
-  completed: "bg-emerald-100 text-emerald-800 border-emerald-200",
-};
-
-export function StatusBadge({ status }: { status: string }) {
-  const key = status.toLowerCase().replace(/_/g, " ");
-  const colourClass = STATUS_COLOURS[key] ?? "bg-slate-100 text-slate-700 border-slate-200";
-  return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${colourClass}`}>
-      {status.replace(/_/g, " ")}
-    </span>
-  );
-}
-
-export function StatCard({
-  label, value, icon, iconBg = "bg-primary/10", iconColor = "text-primary", to
-}: {
-  label: string; value: number | string; icon: ReactNode; iconBg?: string; iconColor?: string; to?: string;
-}) {
-  const inner = (
-    <div className={`rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition-shadow ${to ? "hover:shadow-md" : ""}`}>
-      <div className="flex items-center gap-3">
-        <div className={`flex size-10 items-center justify-center rounded-md ${iconBg} ${iconColor}`}>
-          {icon}
-        </div>
+            ))}
+            {data.length === 0 && (
+              <tr>
+                <td colSpan={columns.length} className="p-table-empty">
+                  No records match this view.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      <div className="p-table-footer">
+        <span>
+          {data.length
+            ? `${currentPage * pageSize + 1}–${Math.min((currentPage + 1) * pageSize, data.length)} of ${data.length} records`
+            : "0 records"}
+        </span>
         <div>
-          <p className="text-sm font-medium text-slate-500">{label}</p>
-          <p className="text-2xl font-bold text-slate-900">{value}</p>
+          <button
+            aria-label="Previous page"
+            className="p-icon-button"
+            disabled={currentPage === 0}
+            onClick={() => setPage(currentPage - 1)}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            aria-label="Next page"
+            className="p-icon-button"
+            disabled={(currentPage + 1) * pageSize >= data.length}
+            onClick={() => setPage(currentPage + 1)}
+          >
+            <ChevronRight size={16} />
+          </button>
         </div>
       </div>
     </div>
   );
-  return to ? <Link to={to as "/"}>{inner}</Link> : inner;
 }
 
-export function SkeletonCard({ lines = 2 }: { lines?: number }) {
+export function StatusBadge({ status }: { status: string }) {
+  const label = status.replace(/_/g, " ");
+  const tone = /^(active|live|complete|completed|on_track)$/.test(status)
+    ? "green"
+    : /^(urgent|delayed|at_risk)$/.test(status)
+      ? "red"
+      : /^(in_progress|pending|construction|installing|installation|suspended)$/.test(status)
+        ? "amber"
+        : /^(open|planning|design)$/.test(status)
+          ? "blue"
+          : "gray";
   return (
-    <div className="animate-pulse rounded-lg border border-slate-200 bg-white p-6">
-      <div className="h-6 w-1/3 rounded bg-slate-200" />
+    <span className={`p-status p-status-${tone}`}>
+      <span />
+      {label}
+    </span>
+  );
+}
+export function StatCard({
+  label,
+  value,
+  icon,
+  to,
+  hint,
+}: {
+  label: string;
+  value: number | string;
+  icon: ReactNode;
+  iconBg?: string;
+  iconColor?: string;
+  to?: string;
+  hint?: string;
+}) {
+  const content = (
+    <>
+      <div className="p-stat-label">
+        <span>{label}</span>
+        {icon}
+      </div>
+      <div className="p-stat-value">{value}</div>
+      {hint && <p className="p-stat-hint">{hint}</p>}
+      {to && <ArrowUpRight className="p-stat-arrow" size={15} />}
+    </>
+  );
+  return to ? (
+    <Link to={to} className="p-stat">
+      {content}
+    </Link>
+  ) : (
+    <div className="p-stat">{content}</div>
+  );
+}
+export function SkeletonCard({ lines = 3 }: { lines?: number }) {
+  return (
+    <div className="p-panel p-skeleton" role="status" aria-label="Loading records">
+      <span className="sr-only">Loading…</span>
+      <div />
       {Array.from({ length: lines }).map((_, i) => (
-        <div key={i} className={`mt-3 h-4 rounded bg-slate-200 ${i === 0 ? "w-2/3" : "w-1/2"}`} />
+        <div key={i} />
       ))}
     </div>
   );
 }
-
-export function EmptyState({ icon, title, description, action }: {
-  icon: ReactNode; title: string; description: string; action?: { label: string; onClick?: () => void; to?: string };
+export function EmptyState({
+  icon,
+  title,
+  description,
+  action,
+}: {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  action?: { label: string; onClick?: () => void; to?: string };
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white py-16 text-center">
-      <div className="flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-        {icon}
+    <div className="p-empty">
+      <div className="p-empty-icon">{icon}</div>
+      <h3>{title}</h3>
+      <p>{description}</p>
+      {action &&
+        (action.to ? (
+          <Link to={action.to} className="p-button p-button-secondary">
+            {action.label}
+          </Link>
+        ) : (
+          <button onClick={action.onClick} className="p-button p-button-secondary">
+            {action.label}
+          </button>
+        ))}
+    </div>
+  );
+}
+export function ErrorState({ retry }: { retry: () => void }) {
+  return (
+    <div className="p-error" role="alert">
+      <div>
+        <strong>We couldn’t load these records.</strong>
+        <p>Your information is safe. Please try again.</p>
       </div>
-      <h3 className="mt-4 text-sm font-semibold text-slate-900">{title}</h3>
-      <p className="mt-1 text-sm text-slate-500 max-w-sm">{description}</p>
-      {action && (
-        <div className="mt-6">
-          {action.to ? (
-            <Link to={action.to as "/"} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-deep">{action.label}</Link>
-          ) : (
-            <button type="button" onClick={action.onClick} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-deep">{action.label}</button>
-          )}
-        </div>
-      )}
+      <button className="p-button p-button-secondary" onClick={retry}>
+        Try again
+      </button>
     </div>
   );
 }

@@ -16,7 +16,12 @@ export const Route = createFileRoute("/developer")({
 });
 
 const NAV = [
-  { to: "/developer", label: "Projects", icon: <Briefcase className="size-5" aria-hidden />, exact: true },
+  {
+    to: "/developer",
+    label: "Projects",
+    icon: <Briefcase className="size-5" aria-hidden />,
+    exact: true,
+  },
   { to: "/developer/sites", label: "Sites", icon: <MapPin className="size-5" aria-hidden /> },
 ] as const;
 
