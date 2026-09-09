@@ -27,9 +27,18 @@ export const Route = createFileRoute("/support")({
 
 const STEPS = [
   ["Check the lights", "On your modem, look for a steady (not flashing) power and internet light."],
-  ["Turn it off, count to thirty", "Unplug the modem at the wall, wait thirty seconds, plug it back in and give it two minutes."],
-  ["Try another device", "If a second phone or tablet also can't connect, it's the service rather than the device."],
-  ["Still stuck? Call us", "We can see your connection from our end and often fix it while you're on the phone."],
+  [
+    "Turn it off, count to thirty",
+    "Unplug the modem at the wall, wait thirty seconds, plug it back in and give it two minutes.",
+  ],
+  [
+    "Try another device",
+    "If a second phone or tablet also can't connect, it's the service rather than the device.",
+  ],
+  [
+    "Still stuck? Call us",
+    "We can see your connection from our end and often fix it while you're on the phone.",
+  ],
 ];
 
 function Support() {
@@ -40,7 +49,7 @@ function Support() {
     <>
       <PageHero
         eyebrow="Support"
-        title="Help with your service"
+        title="A little help. A real person."
         intro="Most problems are solved in a few minutes. Start here, and if it's still not right, we're a phone call away."
       >
         <div className="flex flex-col gap-3 sm:flex-row">
@@ -61,7 +70,7 @@ function Support() {
         </div>
       </PageHero>
 
-      <Section>
+      <Section className="a-help-steps">
         <h2 className="text-2xl font-semibold">Before you call: four things to try</h2>
         <ol className="mt-8 grid gap-6 md:grid-cols-2">
           {STEPS.map(([title, body], i) => (
@@ -81,10 +90,12 @@ function Support() {
       {faqs.length > 0 && (
         <Section muted>
           <h2 className="text-2xl font-semibold">Frequently asked</h2>
-          <div className="mt-8 divide-y divide-border rounded-sm border border-border bg-background">
+          <div className="a-faq-list mt-8">
             {faqs.map((faq) => (
               <details key={faq.id} className="p-7">
-                <summary className="cursor-pointer list-none text-lg font-semibold">{faq.title}</summary>
+                <summary className="cursor-pointer list-none text-lg font-semibold">
+                  {faq.title}
+                </summary>
                 <div className="mt-4 space-y-4 text-muted-foreground">
                   {(faq.body ?? faq.excerpt ?? "").split("\n\n").map((para, i) => (
                     <p key={i}>{para}</p>

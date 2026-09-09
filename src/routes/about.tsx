@@ -34,11 +34,11 @@ function About() {
     <>
       <PageHero
         eyebrow="About us"
-        title="An Australian provider built around care communities"
+        title="Good people. Better connections."
         intro="Acsess Health works with retirement village operators, aged care providers and healthcare campuses across Australia, delivering the connectivity their residents, staff and clinical systems depend on."
       />
 
-      <Section>
+      <Section className="a-about-story">
         <div className="grid items-start gap-12 lg:grid-cols-2">
           <div className="space-y-5 text-lg leading-relaxed">
             <p>
@@ -66,7 +66,7 @@ function About() {
         </div>
       </Section>
 
-      <Section muted>
+      <Section muted className="a-values">
         <SectionHeading eyebrow="How we work" title="What you can expect from us" />
         <div className="mt-12 grid gap-px overflow-hidden rounded-sm bg-border sm:grid-cols-2 lg:grid-cols-4">
           {VALUES.map(([title, body]) => (
@@ -78,7 +78,7 @@ function About() {
         </div>
       </Section>
 
-      <Section>
+      <Section className="a-fit">
         <div className="flex flex-col items-start gap-6 rounded-sm border border-border p-10 md:flex-row md:items-center md:justify-between">
           <div className="max-w-xl">
             <h2 className="text-2xl font-semibold">Want to know whether we're a fit?</h2>

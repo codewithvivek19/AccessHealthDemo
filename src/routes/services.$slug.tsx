@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, Check } from "lucide-react";
 import { serviceQuery } from "@/lib/content.functions";
 import { PageHero, Section } from "@/components/site/Prose";
+import { SERVICE_IMAGES } from "@/components/site/ServiceCard";
 
 export const Route = createFileRoute("/services/$slug")({
   loader: async ({ context, params }) => {
@@ -12,7 +13,12 @@ export const Route = createFileRoute("/services/$slug")({
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Service not found — Acsess Health" }, { name: "robots", content: "noindex" }] };
+      return {
+        meta: [
+          { title: "Service not found — Acsess Health" },
+          { name: "robots", content: "noindex" },
+        ],
+      };
     }
     const { service } = loaderData;
     return {
@@ -36,8 +42,15 @@ function ServiceDetail() {
 
   return (
     <>
-      <PageHero eyebrow={service.category ?? "Service"} title={service.name} intro={service.summary ?? undefined} />
-      <Section>
+      <PageHero
+        eyebrow={service.category ?? "Service"}
+        title={service.name}
+        intro={service.summary ?? undefined}
+      />
+      <Section className="a-service-detail">
+        {SERVICE_IMAGES[service.slug] && (
+          <img className="a-detail-image" src={SERVICE_IMAGES[service.slug]} alt="" />
+        )}
         <div className="grid gap-12 lg:grid-cols-[1.3fr_1fr]">
           <div className="max-w-2xl space-y-5 text-lg leading-relaxed">
             {(service.body ?? "").split("\n\n").map((para, i) => (
@@ -70,7 +83,10 @@ function ServiceDetail() {
           </aside>
         </div>
 
-        <Link to="/services" className="mt-14 inline-flex items-center gap-2 font-medium text-primary hover:underline">
+        <Link
+          to="/services"
+          className="mt-14 inline-flex items-center gap-2 font-medium text-primary hover:underline"
+        >
           <ArrowLeft className="size-4" aria-hidden />
           All services
         </Link>

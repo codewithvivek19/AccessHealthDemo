@@ -56,7 +56,7 @@ function RetirementLiving() {
         intro="Residents shouldn't have to think about how the internet arrives, and operators shouldn't have to chase four different contractors. We design village networks so both are true."
       />
 
-      <Section>
+      <Section className="a-community-story">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <img
             src={MEDIA.village}
@@ -78,7 +78,7 @@ function RetirementLiving() {
         </div>
       </Section>
 
-      <Section muted>
+      <Section muted className="a-community-audiences">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-sm border border-border bg-background p-8">
             <p className="eyebrow text-primary">For operators</p>
@@ -119,7 +119,7 @@ function RetirementLiving() {
         </div>
       </Section>
 
-      <section className="ink-section">
+      <section className="a-survey">
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-8 px-5 py-20 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="max-w-2xl">
             <h2 className="text-3xl font-semibold tracking-tight text-[color:var(--color-ink-foreground)] sm:text-4xl">

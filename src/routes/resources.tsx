@@ -42,13 +42,13 @@ function Resources() {
     <>
       <PageHero
         eyebrow="Resources"
-        title="News, updates and answers"
+        title="Useful knowledge. Shared simply."
         intro="What's happening across the industry, plus straightforward answers to the questions residents and village teams ask us most."
       />
 
       <Section>
         <h2 className="text-2xl font-semibold">Latest news</h2>
-        <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="a-resource-grid">
           {articles.map((item) => (
             <article
               key={item.id}
@@ -71,6 +71,16 @@ function Resources() {
                   <span className="sr-only">(opens in a new tab)</span>
                 </a>
               )}
+              {!item.external_url && item.body && (
+                <details className="a-resource-body">
+                  <summary>Read more</summary>
+                  {item.body.split("\n\n").map((paragraph, i) => (
+                    <p key={i} className="text-muted-foreground">
+                      {paragraph}
+                    </p>
+                  ))}
+                </details>
+              )}
             </article>
           ))}
         </div>
@@ -79,7 +89,7 @@ function Resources() {
       {faqs.length > 0 && (
         <Section muted>
           <h2 className="text-2xl font-semibold">Common questions</h2>
-          <div className="mt-8 divide-y divide-border rounded-sm border border-border bg-background">
+          <div className="a-faq-list mt-8">
             {faqs.map((faq) => (
               <details key={faq.id} className="group p-7">
                 <summary className="cursor-pointer list-none text-lg font-semibold marker:hidden">

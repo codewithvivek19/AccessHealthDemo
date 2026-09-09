@@ -32,7 +32,7 @@ function SwitchStar() {
 
   return (
     <>
-      <section className="border-b border-border bg-secondary">
+      <section className="a-switch-hero">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:px-8 lg:py-28">
           <div className="reveal-up">
             <p className="eyebrow text-primary">Australian designed product</p>
@@ -59,7 +59,7 @@ function SwitchStar() {
         </div>
       </section>
 
-      <Section>
+      <Section className="a-service-detail">
         <div className="grid gap-12 lg:grid-cols-[1.3fr_1fr]">
           <div className="max-w-2xl space-y-5 text-lg leading-relaxed">
             {(product?.description ?? "").split("\n\n").map((para, i) => (

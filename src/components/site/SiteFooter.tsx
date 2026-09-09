@@ -1,56 +1,71 @@
 import { Link } from "@tanstack/react-router";
+import { ArrowUpRight } from "lucide-react";
 import { Logo } from "./Logo";
-import { CONTACT, NAV } from "@/lib/site";
+import { CONTACT } from "@/lib/site";
+import { Landscape } from "./Landscape";
 
 export function SiteFooter() {
   return (
-    <footer className="ink-section">
-      <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
-        <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
-          <div className="max-w-sm">
-            <Logo className="inline-flex rounded-[2px] bg-background px-3 py-2" />
-            <p className="mt-5 text-[color:var(--color-ink-muted)]">
-              An Australian telecommunication service provider, keeping retirement villages, aged
-              care, hospitals and healthcare communities connected since 2004.
-            </p>
-          </div>
-
-          <nav aria-label="Footer" className="flex flex-wrap gap-x-10 gap-y-3">
-            {NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="text-[color:var(--color-ink-muted)] transition-colors hover:text-[color:var(--color-ink-foreground)]"
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Link
-              to="/contact"
-              className="text-[color:var(--color-ink-muted)] transition-colors hover:text-[color:var(--color-ink-foreground)]"
-            >
-              Contact
-            </Link>
-          </nav>
-
-          <div className="text-[color:var(--color-ink-muted)]">
-            <p className="eyebrow text-[color:var(--color-ink-foreground)]">Talk to us</p>
-            <a
-              href={CONTACT.phoneHref}
-              className="mt-3 block text-2xl font-semibold text-[color:var(--color-ink-foreground)]"
-            >
-              {CONTACT.phone}
-            </a>
-            <a href={`mailto:${CONTACT.email}`} className="mt-2 block hover:underline">
-              {CONTACT.email}
-            </a>
-            <p className="mt-2 text-sm">{CONTACT.hours}</p>
-          </div>
+    <footer className="a-footer">
+      <Landscape />
+      <div className="a-footer-wash" />
+      <div className="a-container a-footer-content">
+        <div className="a-footer-invitation">
+          <span className="a-label">A better connected tomorrow</span>
+          <h2>
+            Good connections.
+            <br />
+            Even better communities.
+          </h2>
+          <p>
+            From the first site survey to everyday support.
+            <br />
+            Let’s build something that works for your people.
+          </p>
+          <Link to="/contact" className="a-button">
+            Start a conversation{" "}
+            <span>
+              <ArrowUpRight size={20} />
+            </span>
+          </Link>
         </div>
-
-        <div className="hairline-ink mt-12 flex flex-col gap-2 pt-6 text-sm text-[color:var(--color-ink-muted)] sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} Acsess Health. All rights reserved.</p>
-          <p>Proudly Australian owned and operated.</p>
+        <div className="a-footer-grid">
+          <div className="a-footer-brand">
+            <Logo className="a-footer-logo" />
+            <p>
+              Australian telecommunications for the places people call home. Connecting retirement
+              and care communities since 2004.
+            </p>
+            <a className="a-footer-phone" href={CONTACT.phoneHref}>
+              {CONTACT.phone}
+              <ArrowUpRight size={24} />
+            </a>
+            <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+          </div>
+          <nav aria-label="Footer services">
+            <h3>What we do</h3>
+            <Link to="/services">Connected services</Link>
+            <Link to="/retirement-living">Retirement living</Link>
+            <Link to="/switchstar">SWITCH STAR</Link>
+          </nav>
+          <nav aria-label="Footer company">
+            <h3>Get to know us</h3>
+            <Link to="/about">About Acsess</Link>
+            <Link to="/resources">News & resources</Link>
+            <Link to="/contact">Contact us</Link>
+          </nav>
+          <nav aria-label="Footer help">
+            <h3>Here to help</h3>
+            <Link to="/support">Service support</Link>
+            <Link to="/account">Your account</Link>
+            <Link to="/account/support">Raise a request</Link>
+            <p>{CONTACT.hours}</p>
+          </nav>
+        </div>
+        <div className="a-footer-bottom">
+          <p>© {new Date().getFullYear()} Acsess Health</p>
+          <p>Proudly Australian owned & operated.</p>
+          <a href="#main">Back to top ↑</a>
         </div>
       </div>
     </footer>

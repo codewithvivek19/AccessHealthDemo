@@ -2,6 +2,7 @@
 @source "../src";
 @import "tw-animate-css";
 @import "./portal.css";
+@import "./public-site.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -138,7 +139,6 @@
   --sidebar-border: oklch(0.263 0.046 250 / 12%);
   --sidebar-ring: oklch(0.623 0.143 139);
 }
-
 
 @layer base {
   * {
