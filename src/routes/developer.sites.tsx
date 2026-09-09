@@ -1,11 +1,50 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { Briefcase, CheckCircle2, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Pill } from "@/components/site/PortalShell";
+import { StatusBadge, SkeletonCard, EmptyState, RecordHeader } from "@/components/site/PortalShell";
 
 export const Route = createFileRoute("/developer/sites")({
   component: DeveloperSites,
 });
+
+const PHASES = ["planning", "design", "construction", "commissioning", "live"] as const;
+type Phase = typeof PHASES[number];
+
+function SalesPath({ currentStatus }: { currentStatus: string }) {
+  const pIdx = PHASES.indexOf((currentStatus as Phase) ?? "planning");
+  const idx = pIdx === -1 ? 0 : pIdx;
+
+  return (
+    <div className="flex w-full items-center">
+      {PHASES.map((phase, i) => {
+        const isPast = i < idx;
+        const isCurrent = i === idx;
+        
+        let bgClass = "bg-slate-100 text-slate-500 border-slate-200";
+        if (isPast) bgClass = "bg-primary text-white border-primary";
+        if (isCurrent) bgClass = "bg-primary/10 text-primary border-primary";
+
+        return (
+          <div key={phase} className="flex-1 flex items-center">
+            <div className={`relative flex-1 flex items-center justify-center border-y border-l py-2 first:rounded-l-full last:rounded-r-full last:border-r ${bgClass}`}>
+              <span className="text-xs font-semibold uppercase tracking-wider z-10 flex items-center gap-1.5">
+                {isPast && <CheckCircle2 className="size-3" />}
+                {phase}
+              </span>
+              {/* Chevron arrow styling for path */}
+              {i < PHASES.length - 1 && (
+                <div className="absolute -right-2.5 top-1/2 -translate-y-1/2 z-20 text-white">
+                  <ChevronRight className={`size-5 ${isPast ? "text-primary" : "text-slate-200"}`} />
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function DeveloperSites() {
   const { data, isPending } = useQuery({
@@ -17,35 +56,54 @@ function DeveloperSites() {
     },
   });
 
+  if (isPending) return <SkeletonCard lines={8} />;
+
   return (
-    <div>
-      <h1 className="text-3xl font-light tracking-tight text-brand-dark">Sites</h1>
-      <p className="mt-2 text-lg text-brand-dark/70">
-        The developments Acsess is delivering for your organisation.
-      </p>
+    <div className="space-y-6">
+      <RecordHeader
+        title="Project Sites"
+        subtitle="Network builds Acsess is delivering for your organisation"
+        icon={<Briefcase className="size-5" />}
+      />
 
-      {isPending && <p className="mt-8 text-brand-dark/60">Loading…</p>}
-      {!isPending && !data?.length && <p className="mt-8 text-brand-dark/60">No sites yet.</p>}
-
-      <div className="mt-8 grid gap-6 md:grid-cols-2">
-        {data?.map((s) => (
-          <article key={s.id} className="rounded-2xl border border-brand-dark/10 p-6">
-            <div className="flex items-start justify-between gap-3">
-              <h2 className="text-xl text-brand-dark">{s.name}</h2>
-              <Pill>{s.status}</Pill>
+      {!data?.length ? (
+        <EmptyState icon={<Briefcase className="size-7" />} title="No projects yet" description="Projects linked to your organisation will appear here." />
+      ) : (
+        <div className="space-y-6">
+          {data.map((s) => (
+            <div key={s.id} className="rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-b border-slate-200 bg-slate-50 p-4 flex justify-between items-center">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">{s.name}</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">{[s.address, s.suburb, s.state].filter(Boolean).join(", ")}</p>
+                </div>
+                <div className="flex gap-4 items-center">
+                   <div className="text-right hidden sm:block">
+                      <p className="text-xs font-semibold text-slate-500 uppercase">Dwellings</p>
+                      <p className="text-sm font-bold text-slate-900">{s.dwellings}</p>
+                   </div>
+                   <StatusBadge status={s.status ?? "planning"} />
+                </div>
+              </div>
+              <div className="p-4">
+                <p className="text-xs font-semibold text-slate-500 uppercase mb-3">Project Lifecycle Stage</p>
+                <SalesPath currentStatus={s.status ?? "planning"} />
+                
+                {s.services && s.services.length > 0 && (
+                  <div className="mt-6">
+                     <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Target Services</p>
+                     <div className="flex gap-2">
+                       {s.services.map((svc: string) => (
+                         <span key={svc} className="bg-slate-100 text-slate-700 px-2.5 py-1 rounded text-xs font-medium">{svc}</span>
+                       ))}
+                     </div>
+                  </div>
+                )}
+              </div>
             </div>
-            <p className="mt-1 text-brand-dark/70">
-              {[s.address, s.suburb, s.state].filter(Boolean).join(", ")}
-            </p>
-            <p className="mt-1 text-brand-dark/60">{s.dwellings} dwellings</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {s.services.map((name) => (
-                <Pill key={name}>{name}</Pill>
-              ))}
-            </div>
-          </article>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { LayoutDashboard, Users, InboxIcon } from "lucide-react";
 import { PortalShell } from "@/components/site/PortalShell";
 
 export const Route = createFileRoute("/staff")({
@@ -15,18 +16,19 @@ export const Route = createFileRoute("/staff")({
 });
 
 const NAV = [
-  { to: "/staff", label: "Queue", exact: true },
-  { to: "/staff/customers", label: "Customers" },
-  { to: "/staff/enquiries", label: "Enquiries" },
+  { to: "/staff", label: "Queue", icon: <LayoutDashboard className="size-5" aria-hidden />, exact: true },
+  { to: "/staff/customers", label: "Customers", icon: <Users className="size-5" aria-hidden /> },
+  { to: "/staff/enquiries", label: "Enquiries", icon: <InboxIcon className="size-5" aria-hidden /> },
 ] as const;
 
 function StaffLayout() {
   return (
     <PortalShell
-      eyebrow="Acsess support desk"
-      description="Every customer request in one queue — reply, change status and see who the customer is."
+      eyebrow="Support desk"
+      description="Every customer request in one queue."
       nav={NAV}
       roles={["staff", "admin"]}
+      portalIcon={<LayoutDashboard className="size-5" />}
     />
   );
 }

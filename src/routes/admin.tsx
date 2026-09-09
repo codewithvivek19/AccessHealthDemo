@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { LayoutDashboard, Users, Building2, Globe } from "lucide-react";
 import { PortalShell } from "@/components/site/PortalShell";
 
 export const Route = createFileRoute("/admin")({
@@ -15,19 +16,20 @@ export const Route = createFileRoute("/admin")({
 });
 
 const NAV = [
-  { to: "/admin", label: "Overview", exact: true },
-  { to: "/admin/people", label: "People" },
-  { to: "/admin/organisations", label: "Organisations" },
-  { to: "/admin/content", label: "Content" },
+  { to: "/admin", label: "Overview", icon: <LayoutDashboard className="size-5" aria-hidden />, exact: true },
+  { to: "/admin/people", label: "People", icon: <Users className="size-5" aria-hidden /> },
+  { to: "/admin/organisations", label: "Organisations", icon: <Building2 className="size-5" aria-hidden /> },
+  { to: "/admin/content", label: "Content", icon: <Globe className="size-5" aria-hidden /> },
 ] as const;
 
 function AdminLayout() {
   return (
     <PortalShell
       eyebrow="Admin console"
-      description="Who can access what, which organisations we work with, and what's published on the website."
+      description="People, organisations and published content."
       nav={NAV}
       roles={["admin"]}
+      portalIcon={<LayoutDashboard className="size-5" />}
     />
   );
 }

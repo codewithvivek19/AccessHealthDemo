@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
-import { servicesQuery, type Service } from "@/lib/content.functions";
+import { servicesQuery, resourcesQuery, type Service } from "@/lib/content.functions";
 import { Section, SectionHeading } from "@/components/site/Prose";
 import { Reveal } from "@/components/site/Reveal";
 import { MEDIA } from "@/lib/media";
@@ -83,7 +83,11 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(servicesQuery),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(servicesQuery),
+      context.queryClient.ensureQueryData(resourcesQuery),
+    ]),
   component: Home,
 });
 
@@ -133,8 +137,31 @@ const STEPS = [
   ["Support", "Ongoing monitoring, resident help desk and operator reporting."],
 ];
 
+const TESTIMONIALS = [
+  {
+    quote:
+      "One number to call for internet, TV and phones — and they actually answer. It has taken a real load off our team.",
+    name: "Village manager",
+    handle: "Retirement community, QLD",
+  },
+  {
+    quote:
+      "The internet just works, and when my phone line needed a hand, someone was onto it the same day.",
+    name: "Resident",
+    handle: "Acsess-connected village",
+  },
+  {
+    quote:
+      "Having a single contractor responsible for everything — from the cable in the ground to the handset on the wall — made commissioning so much simpler.",
+    name: "Village developer",
+    handle: "New development, NSW",
+  },
+];
+
 function Home() {
   const { data: services } = useSuspenseQuery(servicesQuery);
+  const { data: resources } = useSuspenseQuery(resourcesQuery);
+  const newsItems = (resources ?? []).filter((r) => r.kind !== "faq").slice(0, 3);
 
   return (
     <>
@@ -191,8 +218,6 @@ function Home() {
           </div>
         </div>
       </section>
-
-
 
       {/* ── 01 Focus areas ───────────────────────────────── */}
       <Section>
@@ -253,7 +278,6 @@ function Home() {
             </Reveal>
           ))}
         </div>
-
       </Section>
 
       {/* ── 03 How we work ───────────────────────────────── */}
@@ -291,6 +315,153 @@ function Home() {
           </Reveal>
         </div>
       </Section>
+
+      {/* ── 04 SwitchStar ────────────────────────────────── */}
+      <section className="ink-section grain relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-40 right-0 size-[32rem] rounded-full bg-[color:var(--color-primary)] opacity-[0.08] blur-[140px]"
+        />
+        <div className="relative mx-auto max-w-[1600px] px-5 py-20 lg:px-10 lg:py-28">
+          <Reveal className="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8fe8b6]">
+                04 — Australian designed product
+              </p>
+              <h2 className="mt-6 text-[2.2rem] font-light leading-[1.05] tracking-[-0.03em] text-[color:var(--color-ink-foreground)] sm:text-5xl">
+                SWITCH STAR
+              </h2>
+              <p className="mt-5 max-w-lg text-lg leading-relaxed text-[color:var(--color-ink-muted)]">
+                A double power outlet that switches itself off — automatically cutting power after
+                eight hours to reduce the fire risk from mobility devices, e-bikes and scooters
+                left charging overnight.
+              </p>
+              <ul className="mt-8 space-y-3 text-[color:var(--color-ink-muted)]">
+                {[
+                  "Australian-designed double GPO",
+                  "Automatic 8-hour charging cut-off",
+                  "10A × 2, white and black finishes",
+                  "Manufactured to Australian electrical standards",
+                ].map((spec) => (
+                  <li key={spec} className="flex items-center gap-3">
+                    <span className="size-1.5 shrink-0 rounded-full bg-[#8fe8b6]" aria-hidden />
+                    {spec}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to="/switchstar"
+                className="mt-10 inline-flex items-center gap-2 rounded-[2px] bg-primary px-7 py-4 text-lg font-medium text-primary-foreground transition-colors hover:bg-primary-deep"
+              >
+                Learn about SWITCH STAR
+                <ArrowRight className="size-5" aria-hidden />
+              </Link>
+            </div>
+            <div className="flex items-center justify-center">
+              <img
+                src={MEDIA.switchStar}
+                alt="The SWITCH STAR double power outlet with automatic 8-hour cut-off"
+                loading="lazy"
+                className="max-h-80 w-full max-w-sm object-contain lg:max-h-96"
+              />
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── 05 Testimonials ──────────────────────────────── */}
+      <Section muted>
+        <SectionHeading
+          eyebrow="05 — What people say"
+          title="Trusted by the people who live and work in our communities."
+        />
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
+          {TESTIMONIALS.map((t, i) => (
+            <Reveal key={t.name} delay={i * 0.08}>
+              <figure className="flex h-full flex-col rounded-[2px] border border-border bg-background p-8">
+                <svg
+                  aria-hidden
+                  className="size-7 text-primary opacity-40"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M11.192 15.757c0-.88-.23-1.618-.69-2.217-.326-.412-.768-.683-1.327-.812-.55-.128-1.07-.137-1.54-.028-.16-.95.1-1.95.78-2.99.68-1.04 1.68-1.83 3-2.37l-1.06-1.94c-1.7.7-3.1 1.87-4.18 3.51C5.1 10.59 4.56 12.3 4.56 14.1c0 1.47.39 2.67 1.17 3.59.78.93 1.82 1.39 3.12 1.39 1.06 0 1.97-.35 2.73-1.06.76-.7 1.14-1.63 1.14-2.76l-.49.5zm9.96 0c0-.88-.23-1.618-.69-2.217-.326-.42-.77-.692-1.327-.812-.55-.128-1.07-.137-1.54-.028-.16-.95.1-1.95.78-2.99.68-1.04 1.68-1.83 3-2.37l-1.06-1.94c-1.7.7-3.1 1.87-4.18 3.51-1.08 1.64-1.62 3.35-1.62 5.15 0 1.47.39 2.67 1.17 3.59.78.93 1.82 1.39 3.12 1.39 1.06 0 1.97-.35 2.73-1.06.76-.7 1.14-1.63 1.14-2.76l-.49.5z" />
+                </svg>
+                <blockquote className="mt-5 flex-1 text-lg leading-relaxed text-foreground">
+                  "{t.quote}"
+                </blockquote>
+                <figcaption className="mt-8 border-t border-border pt-6">
+                  <p className="font-semibold">{t.name}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{t.handle}</p>
+                </figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+      </Section>
+
+      {/* ── 06 Latest news ───────────────────────────────── */}
+      {newsItems.length > 0 && (
+        <Section>
+          <div className="flex flex-wrap items-end justify-between gap-8">
+            <SectionHeading
+              eyebrow="06 — Latest news"
+              title="What's happening at Acsess."
+            />
+            <Link
+              to="/resources"
+              className="inline-flex items-center gap-2 rounded-[2px] border border-border px-6 py-3.5 font-medium transition-colors hover:border-primary hover:text-primary"
+            >
+              All news
+              <ArrowRight className="size-4" aria-hidden />
+            </Link>
+          </div>
+          <div className="mt-14 grid gap-6 md:grid-cols-3">
+            {newsItems.map((item, i) => (
+              <Reveal key={item.id} delay={i * 0.06}>
+                <article className="flex h-full flex-col rounded-[2px] border border-border bg-background p-8 transition-colors hover:border-primary">
+                  {item.published_at && (
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                      {new Date(item.published_at).toLocaleDateString("en-AU", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                  )}
+                  <h3 className="mt-3 flex-1 text-xl font-normal tracking-[-0.02em]">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 line-clamp-3 text-muted-foreground">{item.excerpt}</p>
+                  {item.external_url && (
+                    <a
+                      href={item.external_url}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+                    >
+                      Read the article
+                      <svg
+                        aria-hidden
+                        className="size-3.5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15,3 21,3 21,9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                      </svg>
+                      <span className="sr-only">(opens in a new tab)</span>
+                    </a>
+                  )}
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </Section>
+      )}
 
       {/* ── CTA ──────────────────────────────────────────── */}
       <section className="ink-section grain relative overflow-hidden">

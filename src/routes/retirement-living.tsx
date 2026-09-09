@@ -39,6 +39,14 @@ const RESIDENT = [
   "Support that has time for the question you think is silly",
 ];
 
+const DEVELOPER = [
+  "Early engagement during the design and DA stage",
+  "Infrastructure spec that complies with NBN Co and Telstra requirements",
+  "Coordination with builders, electricians and cabling contractors",
+  "Staged commissioning aligned to construction milestones",
+  "Handover to the operator with full documentation",
+];
+
 function RetirementLiving() {
   return (
     <>
@@ -71,7 +79,7 @@ function RetirementLiving() {
       </Section>
 
       <Section muted>
-        <div className="grid gap-10 md:grid-cols-2">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-sm border border-border bg-background p-8">
             <p className="eyebrow text-primary">For operators</p>
             <h2 className="mt-3 text-2xl font-semibold">Fewer contracts, clearer accountability</h2>
@@ -89,6 +97,18 @@ function RetirementLiving() {
             <h2 className="mt-3 text-2xl font-semibold">Connected, without the runaround</h2>
             <ul className="mt-6 space-y-3">
               {RESIDENT.map((item) => (
+                <li key={item} className="flex gap-3 text-lg">
+                  <Check className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-sm border border-border bg-background p-8">
+            <p className="eyebrow text-primary">For developers and project teams</p>
+            <h2 className="mt-3 text-2xl font-semibold">Connectivity built into the design</h2>
+            <ul className="mt-6 space-y-3">
+              {DEVELOPER.map((item) => (
                 <li key={item} className="flex gap-3 text-lg">
                   <Check className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
                   <span>{item}</span>

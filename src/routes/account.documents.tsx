@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, FileCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { EmptyState, SkeletonCard, RecordHeader, DataTable } from "@/components/site/PortalShell";
 
 export const Route = createFileRoute("/account/documents")({
   component: Documents,
@@ -10,6 +12,8 @@ export const Route = createFileRoute("/account/documents")({
 
 function Documents() {
   const { user } = useAuth();
+  const [filter, setFilter] = useState<string>("all");
+
   const { data, isPending } = useQuery({
     queryKey: ["my-documents", user?.id],
     enabled: Boolean(user),
@@ -24,49 +28,76 @@ function Documents() {
     },
   });
 
+  const categories = ["all", ...Array.from(new Set((data ?? []).map((d) => d.category).filter(Boolean)))];
+  const filtered = filter === "all" ? (data ?? []) : (data ?? []).filter((d) => d.category === filter);
+
+  if (isPending) return <SkeletonCard lines={4} />;
+
   return (
-    <div>
-      <h1 className="text-3xl font-semibold tracking-tight">Documents</h1>
-      <p className="mt-2 text-lg text-muted-foreground">
-        Service agreements, statements and setup guides we've shared with you.
-      </p>
-
-      {isPending && <p className="mt-8 text-lg text-muted-foreground">Loading…</p>}
-
-      {!isPending && !data?.length && (
-        <p className="mt-8 text-lg text-muted-foreground">No documents yet.</p>
-      )}
-
-      {!!data?.length && (
-        <ul className="mt-8 divide-y divide-border rounded-sm border border-border">
-          {data.map((doc) => (
-            <li key={doc.id} className="flex flex-wrap items-center justify-between gap-4 p-6">
-              <div className="flex items-center gap-4">
-                <FileText className="size-6 text-primary" aria-hidden />
-                <div>
-                  <p className="text-lg font-medium">{doc.title}</p>
-                  <p className="text-muted-foreground">
-                    {[doc.category, doc.size_label, doc.issued_on
-                      ? new Date(doc.issued_on).toLocaleDateString("en-AU")
-                      : null]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                </div>
-              </div>
-              {doc.file_url && (
-                <a
-                  href={doc.file_url}
-                  className="inline-flex items-center gap-2 rounded-sm border border-border px-5 py-3 text-lg font-medium hover:bg-secondary"
+    <div className="space-y-6">
+      <RecordHeader
+        title="Documents"
+        subtitle="Service agreements, statements and setup guides"
+        icon={<FileText className="size-5" />}
+        actions={
+          categories.length > 1 && (
+            <div className="flex bg-slate-100 p-1 rounded-md">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setFilter(cat)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded capitalize transition-colors ${
+                    filter === cat ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"
+                  }`}
                 >
-                  <Download className="size-5" aria-hidden />
-                  Download
-                  <span className="sr-only">{doc.title}</span>
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )
+        }
+      />
+
+      {!filtered.length ? (
+        <EmptyState icon={<FileText className="size-7" />} title="No documents" description="Invoices, agreements and guides will appear here." />
+      ) : (
+        <DataTable
+          data={filtered}
+          columns={[
+            {
+              header: "Document Title",
+              className: "w-full",
+              accessor: (r) => (
+                <div className="flex items-center gap-3">
+                  <div className="flex size-8 items-center justify-center rounded bg-slate-100 text-slate-500">
+                    <FileCheck className="size-4" />
+                  </div>
+                  <span className="font-medium text-slate-900">{r.title}</span>
+                </div>
+              )
+            },
+            {
+              header: "Category",
+              accessor: (r) => <span className="capitalize text-slate-600">{r.category ?? "General"}</span>
+            },
+            {
+              header: "Size",
+              accessor: (r) => <span className="text-slate-600">{r.size_label ?? "-"}</span>
+            },
+            {
+              header: "Date",
+              accessor: (r) => <span className="text-slate-600">{r.issued_on ? new Date(r.issued_on).toLocaleDateString("en-AU") : "-"}</span>
+            },
+            {
+              header: "",
+              accessor: (r) => r.file_url ? (
+                <a href={r.file_url} download className="flex items-center justify-center rounded border border-slate-200 bg-white p-1.5 text-slate-500 hover:bg-slate-50 hover:text-primary transition-colors">
+                  <Download className="size-4" />
                 </a>
-              )}
-            </li>
-          ))}
-        </ul>
+              ) : null
+            }
+          ]}
+        />
       )}
     </div>
   );

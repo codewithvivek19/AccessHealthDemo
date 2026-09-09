@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { LayoutDashboard, MapPin, LifeBuoy } from "lucide-react";
 import { PortalShell } from "@/components/site/PortalShell";
 
 export const Route = createFileRoute("/operator")({
@@ -15,19 +16,20 @@ export const Route = createFileRoute("/operator")({
 });
 
 const NAV = [
-  { to: "/operator", label: "Overview", exact: true },
-  { to: "/operator/sites", label: "Villages" },
-  { to: "/operator/requests", label: "Requests" },
+  { to: "/operator", label: "Overview", icon: <LayoutDashboard className="size-5" aria-hidden />, exact: true },
+  { to: "/operator/sites", label: "Villages", icon: <MapPin className="size-5" aria-hidden /> },
+  { to: "/operator/requests", label: "Requests", icon: <LifeBuoy className="size-5" aria-hidden /> },
 ] as const;
 
 function OperatorLayout() {
   return (
     <PortalShell
       eyebrow="Operator portal"
-      description="Your villages, what's connected at each one, and the requests residents have raised."
+      description="Your villages, what is connected, and resident requests."
       nav={NAV}
       roles={["operator", "staff"]}
       orgKind="operator"
+      portalIcon={<MapPin className="size-5" />}
     />
   );
 }

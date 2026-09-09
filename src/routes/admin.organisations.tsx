@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { Building2, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Pill } from "@/components/site/PortalShell";
+import { StatusBadge, SkeletonCard, EmptyState, RecordHeader, DataTable } from "@/components/site/PortalShell";
 
 export const Route = createFileRoute("/admin/organisations")({
   component: AdminOrganisations,
@@ -11,58 +12,58 @@ function AdminOrganisations() {
   const { data, isPending } = useQuery({
     queryKey: ["admin-organisations"],
     queryFn: async () => {
-      const [orgs, sites, members] = await Promise.all([
+      const [orgs, members] = await Promise.all([
         supabase.from("organisations").select("*").order("name"),
-        supabase.from("sites").select("id, name, organisation_id, status, dwellings"),
-        supabase.from("organisation_members").select("organisation_id, user_id, title"),
+        supabase.from("organisation_members").select("organisation_id, user_id"),
       ]);
       if (orgs.error) throw orgs.error;
-      return { orgs: orgs.data ?? [], sites: sites.data ?? [], members: members.data ?? [] };
+      return { orgs: orgs.data ?? [], members: members.data ?? [] };
     },
   });
 
+  if (isPending) return <SkeletonCard lines={5} />;
+
   return (
-    <div>
-      <h1 className="text-3xl font-light tracking-tight text-brand-dark">Organisations</h1>
-      <p className="mt-2 text-lg text-brand-dark/70">
-        Village operators and property developers, and the sites they own.
-      </p>
+    <div className="space-y-6">
+      <RecordHeader
+        title="Organisations"
+        subtitle="Manage operators, developers and partners"
+        icon={<Building2 className="size-5" />}
+      />
 
-      {isPending && <p className="mt-8 text-brand-dark/60">Loading…</p>}
-
-      <div className="mt-8 space-y-6">
-        {data?.orgs.map((org) => {
-          const sites = data.sites.filter((s) => s.organisation_id === org.id);
-          const members = data.members.filter((m) => m.organisation_id === org.id);
-          return (
-            <article key={org.id} className="rounded-2xl border border-brand-dark/10 p-7">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-2xl font-light tracking-tight text-brand-dark">
-                    {org.name}
-                  </h2>
-                  <p className="mt-1 text-brand-dark/60">
-                    {[org.contact_email, `${members.length} people`].filter(Boolean).join(" · ")}
-                  </p>
-                </div>
-                <Pill>{org.kind}</Pill>
-              </div>
-              <ul className="mt-5 space-y-2">
-                {sites.map((s) => (
-                  <li key={s.id} className="flex items-center justify-between gap-3">
-                    <span className="text-brand-dark">{s.name}</span>
-                    <span className="flex items-center gap-3 text-brand-dark/60">
-                      {s.dwellings} dwellings
-                      <Pill>{s.status}</Pill>
-                    </span>
-                  </li>
-                ))}
-                {!sites.length && <li className="text-brand-dark/60">No sites yet.</li>}
-              </ul>
-            </article>
-          );
-        })}
-      </div>
+      {!data?.orgs.length ? (
+        <EmptyState icon={<Building2 className="size-7" />} title="No organisations yet" description="Organisations will appear here once created." />
+      ) : (
+        <DataTable
+          data={data.orgs}
+          columns={[
+            {
+              header: "Organisation Name",
+              accessor: (r) => <span className="font-semibold text-slate-900">{r.name}</span>
+            },
+            {
+              header: "Type",
+              accessor: (r) => <StatusBadge status={r.kind ?? "partner"} />
+            },
+            {
+              header: "Members",
+              accessor: (r) => {
+                const count = (data.members ?? []).filter((m) => m.organisation_id === r.id).length;
+                return (
+                   <span className="flex items-center gap-1.5 text-slate-600">
+                     <Users className="size-3.5" />
+                     {count} user{count !== 1 ? "s" : ""}
+                   </span>
+                );
+              }
+            },
+            {
+              header: "Contact Email",
+              accessor: (r) => <span className="text-slate-600">{r.contact_email ?? "-"}</span>
+            }
+          ]}
+        />
+      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Briefcase, MapPin } from "lucide-react";
 import { PortalShell } from "@/components/site/PortalShell";
 
 export const Route = createFileRoute("/developer")({
@@ -15,8 +16,8 @@ export const Route = createFileRoute("/developer")({
 });
 
 const NAV = [
-  { to: "/developer", label: "Projects", exact: true },
-  { to: "/developer/sites", label: "Sites" },
+  { to: "/developer", label: "Projects", icon: <Briefcase className="size-5" aria-hidden />, exact: true },
+  { to: "/developer/sites", label: "Sites", icon: <MapPin className="size-5" aria-hidden /> },
 ] as const;
 
 function DeveloperLayout() {
@@ -27,6 +28,7 @@ function DeveloperLayout() {
       nav={NAV}
       roles={["staff"]}
       orgKind="developer"
+      portalIcon={<Briefcase className="size-5" />}
     />
   );
 }
