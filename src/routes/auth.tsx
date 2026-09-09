@@ -1,20 +1,13 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import {
-  ArrowLeft,
-  ArrowRight,
-  ArrowUpRight,
-  Eye,
-  EyeOff,
-  LockKeyhole,
-  MessageSquare,
-  Wifi,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Eye, EyeOff, LockKeyhole } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useMyOrganisations, useRoles } from "@/hooks/usePortalAccess";
 import { DEMO_ACCOUNTS } from "@/lib/demo-accounts";
+import { Logo } from "@/components/site/Logo";
+import { MEDIA } from "@/lib/media";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [{ title: "Welcome — Acsess Health" }, { name: "robots", content: "noindex" }],
@@ -83,14 +76,8 @@ function AuthPage() {
   return (
     <div className="portal p-login">
       <div className="p-login-art">
-        <Link to="/" className="p-brand">
-          <span className="p-brand-symbol">
-            a<span />
-          </span>
-          <span>
-            acsess<span className="p-brand-health">HEALTH</span>
-          </span>
-        </Link>
+        <img className="p-login-art-image" src={MEDIA.village} alt={MEDIA.villageAlt} />
+        <Logo className="p-brand p-dashboard-logo" />
         <div className="p-login-story">
           <span className="p-login-eyebrow">A MORE CONNECTED EVERYDAY</span>
           <h1>
@@ -102,20 +89,6 @@ function AuthPage() {
             A single place for your services, your people, and the conversations that keep you
             connected.
           </p>
-          <div className="p-login-orbit" aria-hidden="true">
-            <div className="p-orbit-ring p-orbit-ring-one" />
-            <div className="p-orbit-ring p-orbit-ring-two" />
-            <span className="p-orbit-center">a</span>
-            <span className="p-orbit-node p-orbit-node-one">
-              <Wifi size={22} strokeWidth={1.3} />
-            </span>
-            <span className="p-orbit-node p-orbit-node-two">
-              <MessageSquare size={22} strokeWidth={1.3} />
-            </span>
-            <span className="p-orbit-node p-orbit-node-three">
-              <LockKeyhole size={18} strokeWidth={1.3} />
-            </span>
-          </div>
         </div>
         <div className="p-login-art-footer">
           <span>Designed around people.</span>
@@ -123,10 +96,13 @@ function AuthPage() {
         </div>
       </div>
       <div className="p-login-form-side">
-        <Link to="/" className="p-login-back">
-          <ArrowLeft size={15} />
-          Back to Acsess
-        </Link>
+        <div className="p-login-form-nav">
+          <Logo className="p-login-mobile-logo" />
+          <Link to="/" className="p-login-back">
+            <ArrowLeft size={15} />
+            Back to Acsess
+          </Link>
+        </div>
         <div className="p-login-form">
           <div className="p-login-form-heading">
             <span className="p-login-eyebrow">YOUR ACSESS ACCOUNT</span>

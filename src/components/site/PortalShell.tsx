@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Logo } from "@/components/site/Logo";
 
 export type NavItem = { to: string; label: string; icon: ReactNode; exact?: boolean };
 
@@ -99,14 +100,7 @@ export function PortalShell({
 
   const sidebar = (
     <>
-      <Link to="/" className="p-brand" aria-label="Acsess Health home">
-        <span className="p-brand-symbol">
-          a<span />
-        </span>
-        <span>
-          acsess<span className="p-brand-health">HEALTH</span>
-        </span>
-      </Link>
+      <Logo className="p-brand p-dashboard-logo" />
       <DropdownMenu>
         <DropdownMenuTrigger className="p-workspace">
           <span className="p-workspace-icon">
