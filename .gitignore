@@ -33,4 +33,6 @@ dist-ssr
 
 output/
 tmp/
+.deck-*/
+
 
