@@ -14,6 +14,7 @@
   font-size: 14px;
   line-height: 1.6;
 }
+.ac-agent-wrap{position:relative;margin:-13px 0 26px auto;max-width:760px;z-index:12}.ac-agent-bar{display:flex;align-items:center;gap:10px;min-height:54px;background:#fff;border:1px solid #d5e2d4;border-radius:28px;padding:6px 8px 6px 12px;box-shadow:0 12px 35px #183d2510}.ac-agent-bar:focus-within,.ac-agent-bar.is-open{border-color:#88ad83;box-shadow:0 14px 38px #284c2a20}.ac-agent-mark{display:grid;place-items:center;width:30px;height:30px;background:#e8f2df;color:#5a8a50;border-radius:50%;flex:none}.ac-agent-bar input{min-width:0;flex:1;background:transparent;font-size:12px;color:var(--ink);outline:none}.ac-agent-bar input::placeholder{color:#89988c}.ac-agent-bar kbd{display:flex;align-items:center;gap:2px;border:1px solid #e1e9df;border-radius:5px;padding:4px 7px;color:#879484;font-size:10px}.ac-agent-action{display:flex;align-items:center;gap:7px;background:#214e3d;color:#fff;border-radius:22px;padding:10px 15px;font-size:11px;white-space:nowrap}.ac-agent-popover{position:absolute;right:0;top:63px;width:min(100%,650px);border:1px solid #dce8da;background:#fff;border-radius:16px;padding:18px;box-shadow:0 25px 70px #15332324}.ac-agent-popover-head{display:flex;align-items:center;gap:11px}.ac-agent-popover-head>div{flex:1}.ac-agent-popover-head strong{font-size:13px}.ac-agent-popover-head p{font-size:10px;color:#849287;margin-top:2px}.ac-agent-popover-head .ac-icon{font-size:20px;min-width:30px;min-height:30px}.ac-agent-suggestions{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 5px}.ac-agent-suggestions button{background:#f3f7ef;border:1px solid #e4ecdf;border-radius:16px;padding:7px 11px;font-size:10px;color:#577052}.ac-agent-suggestions button:hover{background:#eaf3e2}.ac-agent-reply{display:flex;gap:10px;align-items:flex-start;background:#f7faf5;border-radius:10px;padding:13px;margin-top:13px;color:#55704f}.ac-agent-reply p{font-size:11px;line-height:1.65;color:#637361}
 .ac-demo button,
 .ac-dialog button {
   cursor: pointer;
@@ -1154,6 +1155,7 @@
   }
 }
 @media (max-width: 620px) {
+  .ac-agent-wrap{margin:0 0 20px;max-width:none}.ac-agent-bar{min-height:50px;padding-left:9px}.ac-agent-bar kbd{display:none}.ac-agent-action{padding:9px 10px;font-size:10px}.ac-agent-action svg{display:none}.ac-agent-popover{top:58px;left:0;right:0;width:auto}.ac-agent-suggestions button{font-size:9px}
   .ac-content {
     padding: 25px 18px 0;
   }

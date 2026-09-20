@@ -88,6 +88,11 @@ export function PortalShell({
     if (!authLoading && !session) void navigate({ to: "/auth" });
   }, [authLoading, session, navigate]);
   useEffect(() => {
+    if (session && /^(\/account|\/staff|\/admin|\/operator|\/developer)(\/|$)/.test(pathname)) {
+      void navigate({ to: "/demo" });
+    }
+  }, [pathname, session, navigate]);
+  useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
@@ -215,9 +220,6 @@ export function PortalShell({
             <strong>{active?.label ?? "Overview"}</strong>
           </div>
           <div className="p-topbar-actions">
-            <a href="/demo" className="p-button p-button-secondary">
-              New portal demo <ArrowUpRight size={15} />
-            </a>
             <button
               className="p-search-trigger"
               onClick={() => {

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -22,6 +23,9 @@ import {
   MapPin,
   Clock,
   Building2,
+  Bot,
+  Command,
+  Sparkles,
 } from "lucide-react";
 import { Logo } from "@/components/site/Logo";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -110,6 +114,9 @@ function DemoPortal() {
   const [confirmation, setConfirmation] = useState("");
   const [filter, setFilter] = useState("All requests");
   const [assigned, setAssigned] = useState<string[]>([]);
+  const [agentOpen, setAgentOpen] = useState(false);
+  const [agentQuery, setAgentQuery] = useState("");
+  const [agentReply, setAgentReply] = useState("");
   const go = (name: string) => {
     setTab(name);
     setQuery("");
@@ -249,7 +256,22 @@ function DemoPortal() {
             </button>
           </div>
         )}
-        <main className="ac-content">
+      <main className="ac-content">
+        <div className="ac-agent-wrap">
+          <motion.div layout className={`ac-agent-bar ${agentOpen ? "is-open" : ""}`}>
+            <div className="ac-agent-mark"><Sparkles size={16} /></div>
+            <input aria-label="Ask Acsess" value={agentQuery} onChange={(e) => setAgentQuery(e.target.value)} onFocus={() => setAgentOpen(true)} onKeyDown={(e) => { if (e.key === "Enter" && agentQuery.trim()) { setAgentReply(`I found the clearest next step for “${agentQuery.trim()}”. I can open the relevant workspace view or prepare a request for your team.`); setAgentOpen(true); } }} placeholder={staff ? "Ask Acsess to prioritise work, find an account or explain an issue" : "Ask Acsess about your services, bills or support"} />
+            <kbd><Command size={12} /> K</kbd>
+            <motion.button layout className="ac-agent-action" onClick={() => { setAgentOpen(true); if (!agentQuery) setAgentQuery("Show me what needs attention"); }}><Bot size={16} /> Ask Acsess</motion.button>
+          </motion.div>
+          <AnimatePresence>
+            {agentOpen && <motion.div className="ac-agent-popover" initial={{ opacity: 0, y: -8, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8 }}>
+              <div className="ac-agent-popover-head"><span className="ac-agent-mark"><Sparkles size={15} /></span><div><strong>Acess agent preview</strong><p>Answers are grounded in this demo workspace.</p></div><button className="ac-icon" onClick={() => setAgentOpen(false)} aria-label="Close Acsess agent">×</button></div>
+              <div className="ac-agent-suggestions"><button onClick={() => { setAgentQuery("What needs my attention?"); setAgentReply("One open support request is in review. Your next bill is scheduled for 25 September. I can open either view for you."); }}>What needs my attention?</button><button onClick={() => { setAgentQuery("Summarise my services"); setAgentReply("You have Village Internet on Everyday 100 and Home Phone on Stay Connected. Both services are active."); }}>Summarise my services</button><button onClick={() => { setAgentQuery("Start a support request"); request(); setAgentOpen(false); }}>Start a support request</button></div>
+              {agentReply && <div className="ac-agent-reply"><Bot size={18} /><p>{agentReply}</p></div>}
+            </motion.div>}
+          </AnimatePresence>
+        </div>
           <div className="ac-heading">
             <div>
               <span className="ac-eyebrow">
