@@ -251,6 +251,13 @@ function AuthPage() {
               {mode === "signin" ? "Create an account" : "Sign in"}
             </button>
           </p>
+          <a
+            href="/demo"
+            className="p-button p-button-secondary"
+            style={{ width: "100%", marginBottom: 16 }}
+          >
+            Explore the interactive portal <ArrowUpRight size={16} />
+          </a>
           {mode === "signin" && (
             <details className="p-demo-options">
               <summary>Explore a demo account</summary>

@@ -215,6 +215,9 @@ export function PortalShell({
             <strong>{active?.label ?? "Overview"}</strong>
           </div>
           <div className="p-topbar-actions">
+            <a href="/demo" className="p-button p-button-secondary">
+              New portal demo <ArrowUpRight size={15} />
+            </a>
             <button
               className="p-search-trigger"
               onClick={() => {

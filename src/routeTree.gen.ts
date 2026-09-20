@@ -15,6 +15,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as DeveloperRouteImport } from './routes/developer'
 import { Route as OperatorRouteImport } from './routes/operator'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -71,6 +72,11 @@ const AuthRoute = AuthRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DeveloperRoute = DeveloperRouteImport.update({
@@ -216,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/demo': typeof DemoRoute
   '/developer': typeof DeveloperRouteWithChildren
   '/operator': typeof OperatorRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
@@ -249,6 +256,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/demo': typeof DemoRoute
   '/reset-password': typeof ResetPasswordRoute
   '/resources': typeof ResourcesRoute
   '/retirement-living': typeof RetirementLivingRoute
@@ -282,6 +290,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/demo': typeof DemoRoute
   '/developer': typeof DeveloperRouteWithChildren
   '/operator': typeof OperatorRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
@@ -319,6 +328,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/contact'
+    | '/demo'
     | '/developer'
     | '/operator'
     | '/reset-password'
@@ -352,6 +362,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/contact'
+    | '/demo'
     | '/reset-password'
     | '/resources'
     | '/retirement-living'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/contact'
+    | '/demo'
     | '/developer'
     | '/operator'
     | '/reset-password'
@@ -420,6 +432,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
+  DemoRoute: typeof DemoRoute
   DeveloperRoute: typeof DeveloperRouteWithChildren
   OperatorRoute: typeof OperatorRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -474,6 +487,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/developer': {
@@ -754,6 +774,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
+  DemoRoute: DemoRoute,
   DeveloperRoute: DeveloperRouteWithChildren,
   OperatorRoute: OperatorRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
